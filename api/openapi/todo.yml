@@ -1,0 +1,68 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Cirrus Todo App
+  description: DDD & CQRS shapping a Go microservice
+  contact:
+    name: Adrian PK
+    url: https://adrianpk.com/
+servers:
+  - url: https://{hostname}/api
+    variables:
+      hostname:
+        default: localhost
+security:
+  - bearerAuth: []
+paths:
+  /lists:
+    post:
+      operationId: createList
+      requestBody:
+        description: Create a Todo list
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateList'
+      responses:
+        '204':
+          description: todo
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateList:
+      type: object
+      required: [userUUID, name, description]
+      properties:
+        userUUID:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Home"
+        description:
+          type: string
+          example: "What needs to be done in the house"
+
+    Error:
+      type: object
+      required:
+        - slug
+        - message
+      properties:
+        slug:
+          type: string
+        message:
+          type: string
+
