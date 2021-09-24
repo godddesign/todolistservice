@@ -80,10 +80,10 @@ func (app *App) initCommands() (err error) {
 	server := app.JSONAPIServer
 	app.AddCommand(&cirrus.SampleCommand)
 	app.AddCommand(command.NewCreateListCommand(server.Todo))
-	//app.AddCommand(command.NewAddItemCommand(app.TodoService))
-	//app.AddCommand(command.NewGetItemCommand(app.TodoService))
-	//app.AddCommand(command.NewUpdateItemCommand(app.TodoService))
-	//app.AddCommand(command.NewDeleteItemCommand(app.TodoService))
-	//app.AddCommand(command.NewDeleteListCommand(app.TodoService))
+	//app.AddCommand(command.NewAddItemCommand(server.TodoService))
+	//app.AddCommand(command.NewGetItemCommand(server.TodoService))
+	//app.AddCommand(command.NewUpdateItemCommand(server.TodoService))
+	//app.AddCommand(command.NewDeleteItemCommand(server.TodoService))
+	//app.AddCommand(command.NewDeleteListCommand(server.TodoService))
 	return err
 }
