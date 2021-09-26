@@ -3,18 +3,17 @@ package app
 import (
 	"sync"
 
-	"github.com/adrianpk/cirrus"
 	"github.com/adrianpk/cirrustodo/internal/app/adapter/jsonapi"
 	"github.com/adrianpk/cirrustodo/internal/app/cqrs/command"
 	"github.com/adrianpk/cirrustodo/internal/app/ports/openapi"
 	"github.com/adrianpk/cirrustodo/internal/app/service"
+	"github.com/adrianpk/cirrustodo/internal/base"
 )
 
 type (
 	// App description
 	App struct {
-		*cirrus.App
-
+		*base.App
 		Config
 
 		JSONAPIServer *jsonapi.Server
@@ -32,7 +31,7 @@ type (
 // NewApp initializes new App worker instance
 func NewApp(name string, ts *service.Todo, cfg *Config) (*App, error) {
 	app := App{
-		App: cirrus.NewApp(name),
+		App: base.NewApp(name),
 	}
 
 	// Server
@@ -78,7 +77,7 @@ func (app *App) Stop() {
 
 func (app *App) initCommands() (err error) {
 	server := app.JSONAPIServer
-	app.AddCommand(&cirrus.SampleCommand)
+	app.AddCommand(&base.SampleCommand)
 	app.AddCommand(command.NewCreateListCommand(server.Todo))
 	//app.AddCommand(command.NewAddItemCommand(server.TodoService))
 	//app.AddCommand(command.NewGetItemCommand(server.TodoService))

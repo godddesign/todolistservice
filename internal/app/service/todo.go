@@ -5,14 +5,14 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/adrianpk/cirrus"
 	"github.com/adrianpk/cirrustodo/internal/app/adapter/repo"
 	"github.com/adrianpk/cirrustodo/internal/app/domain/service"
+	"github.com/adrianpk/cirrustodo/internal/base"
 )
 
 type (
 	Todo struct {
-		cirrus.Service
+		base.Worker
 		repoRead      repo.ListRead
 		repoWrite     repo.ListWrite
 		domainService *service.Todo
@@ -35,7 +35,7 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (svc 
 	}
 
 	svc = Todo{
-		Service:   cirrus.NewService(name, cfg.TracingLevel),
+		Worker:    base.NewWorker(name, cfg.TracingLevel),
 		repoRead:  rr,
 		repoWrite: rw,
 	}

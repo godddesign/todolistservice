@@ -7,10 +7,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	db "github.com/adrianpk/cirrus/db/mongo"
 	"github.com/adrianpk/cirrustodo/internal/app"
 	repo "github.com/adrianpk/cirrustodo/internal/app/adapter/repo/mongo"
 	"github.com/adrianpk/cirrustodo/internal/app/service"
+	db "github.com/adrianpk/cirrustodo/internal/base/db/mongo"
 )
 
 type contextKey string

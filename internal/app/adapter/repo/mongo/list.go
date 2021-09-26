@@ -3,8 +3,8 @@ package mongo
 import (
 	"context"
 
-	db "github.com/adrianpk/cirrus/db/mongo"
 	"github.com/adrianpk/cirrustodo/internal/app/domain/entity"
+	db "github.com/adrianpk/cirrustodo/internal/base/db/mongo"
 	"github.com/google/uuid"
 )
 
