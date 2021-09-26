@@ -3,19 +3,21 @@ package app
 import (
 	"sync"
 
-	"github.com/adrianpk/cirrus"
-	"github.com/adrianpk/cirrustodo/internal/app/adapter/jsonapi"
-	"github.com/adrianpk/cirrustodo/internal/app/cqrs/command"
-	"github.com/adrianpk/cirrustodo/internal/app/ports/openapi"
-	"github.com/adrianpk/cirrustodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
+	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
+	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
+	"github.com/adrianpk/godddtodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (
 	// App description
 	App struct {
-		*cirrus.App
-
+		*base.App
 		Config
+
+		// Service
+		TodoService *service.Todo
 
 		JSONAPIServer *jsonapi.Server
 		//WebServer     *web.Server
@@ -30,13 +32,14 @@ type (
 )
 
 // NewApp initializes new App worker instance
-func NewApp(name string, ts *service.Todo, cfg *Config) (*App, error) {
+func NewApp(name string, svc *service.Todo, cfg *Config) (*App, error) {
 	app := App{
-		App: cirrus.NewApp(name),
+		App:         base.NewApp(name),
+		TodoService: svc,
 	}
 
 	// Server
-	jas, err := jsonapi.NewServer("json-api-server", ts, jsonapi.Config{
+	jas, err := jsonapi.NewServer("json-api-server", svc, jsonapi.Config{
 		TracingLevel: cfg.Tracing.Level,
 	})
 	if err != nil {
@@ -47,7 +50,7 @@ func NewApp(name string, ts *service.Todo, cfg *Config) (*App, error) {
 	app.JSONAPIServer = jas
 
 	// Router
-	h := openapi.Handler(ts)
+	h := openapi.Handler(svc)
 	jas.InitJSONAPIRouter(h)
 
 	return &app, nil
@@ -78,12 +81,12 @@ func (app *App) Stop() {
 
 func (app *App) initCommands() (err error) {
 	server := app.JSONAPIServer
-	app.AddCommand(&cirrus.SampleCommand)
+	app.AddCommand(&base.SampleCommand)
 	app.AddCommand(command.NewCreateListCommand(server.Todo))
-	//app.AddCommand(command.NewAddItemCommand(app.TodoService))
-	//app.AddCommand(command.NewGetItemCommand(app.TodoService))
-	//app.AddCommand(command.NewUpdateItemCommand(app.TodoService))
-	//app.AddCommand(command.NewDeleteItemCommand(app.TodoService))
-	//app.AddCommand(command.NewDeleteListCommand(app.TodoService))
+	//app.AddCommand(command.NewAddItemCommand(server.TodoService))
+	//app.AddCommand(command.NewGetItemCommand(server.TodoService))
+	//app.AddCommand(command.NewUpdateItemCommand(server.TodoService))
+	//app.AddCommand(command.NewDeleteItemCommand(server.TodoService))
+	//app.AddCommand(command.NewDeleteListCommand(server.TodoService))
 	return err
 }

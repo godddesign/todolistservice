@@ -1,10 +1,10 @@
 // Package service provides domain primitives for managing todo lists.
 package service
 
-import "github.com/adrianpk/cirrus"
+import "github.com/adrianpk/godddtodo/internal/base"
 
 type (
-	Todo struct {
-		cirrus.Worker
+	List struct {
+		base.Worker
 	}
 )

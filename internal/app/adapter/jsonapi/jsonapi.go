@@ -3,13 +3,13 @@ package jsonapi
 import (
 	"errors"
 
-	"github.com/adrianpk/cirrus"
-	"github.com/adrianpk/cirrustodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (
 	Server struct {
-		*cirrus.Server
+		*base.Server
 		Config
 		*service.Todo
 	}
@@ -24,7 +24,7 @@ func NewServer(name string, ts *service.Todo, cfg Config) (server *Server, err e
 		return server, errors.New("todo app service is nil")
 	}
 
-	jas, err := cirrus.NewServer(name, cfg.TracingLevel)
+	jas, err := base.NewServer(name, cfg.TracingLevel)
 	if err != nil {
 		return nil, err
 	}

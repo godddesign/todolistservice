@@ -1,21 +1,21 @@
-// Package service provides application primitives for managing todo lists.
+// Package service provides application resources for managing todo lists.
 package service
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/adrianpk/cirrus"
-	"github.com/adrianpk/cirrustodo/internal/app/adapter/repo"
-	"github.com/adrianpk/cirrustodo/internal/app/domain/service"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/repo"
+	"github.com/adrianpk/godddtodo/internal/app/domain/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (
 	Todo struct {
-		cirrus.Service
-		repoRead      repo.ListRead
-		repoWrite     repo.ListWrite
-		domainService *service.Todo
+		base.Worker
+		repoRead    repo.ListRead
+		repoWrite   repo.ListWrite
+		listService *service.List
 	}
 )
 
@@ -35,7 +35,7 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (svc 
 	}
 
 	svc = Todo{
-		Service:   cirrus.NewService(name, cfg.TracingLevel),
+		Worker:    base.NewWorker(name, cfg.TracingLevel),
 		repoRead:  rr,
 		repoWrite: rw,
 	}

@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Cirrus Todo App
+  title: Todo App
   description: DDD & CQRS shapping a Go microservice
   contact:
     name: Adrian PK

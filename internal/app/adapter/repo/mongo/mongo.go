@@ -4,14 +4,14 @@ package mongo
 import (
 	"errors"
 
-	"github.com/adrianpk/cirrus"
-	db "github.com/adrianpk/cirrus/db/mongo"
+	"github.com/adrianpk/godddtodo/internal/base"
+	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
 	Repo struct {
-		*cirrus.BaseWorker
+		*base.BaseWorker
 		conn       *db.Client
 		collection string
 	}
@@ -23,7 +23,7 @@ type (
 
 func NewRepo(name string, conn *db.Client, collection string, cfg Config) *Repo {
 	return &Repo{
-		BaseWorker: cirrus.NewWorker(name, cfg.TracingLevel),
+		BaseWorker: base.NewWorker(name, cfg.TracingLevel),
 		conn:       conn,
 		collection: collection,
 	}
