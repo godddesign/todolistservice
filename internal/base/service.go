@@ -1,5 +1,11 @@
 package base
 
 type (
-	Service interface{}
+	Service interface {
+		Worker
+	}
+
+	BaseService interface {
+		Worker
+	}
 )

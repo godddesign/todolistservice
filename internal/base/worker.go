@@ -18,7 +18,7 @@ type (
 )
 
 func NewWorker(name string, tracingLevel string) *BaseWorker {
-	name = genName(name, "worker")
+	name = GenName(name, "worker")
 
 	return &BaseWorker{
 		name:   name,

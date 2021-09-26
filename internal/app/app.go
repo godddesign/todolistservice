@@ -16,6 +16,9 @@ type (
 		*base.App
 		Config
 
+		// Service
+		TodoService *service.Todo
+
 		JSONAPIServer *jsonapi.Server
 		//WebServer     *web.Server
 		//GRPCServer    *grpc.Server
@@ -29,13 +32,14 @@ type (
 )
 
 // NewApp initializes new App worker instance
-func NewApp(name string, ts *service.Todo, cfg *Config) (*App, error) {
+func NewApp(name string, svc *service.Todo, cfg *Config) (*App, error) {
 	app := App{
-		App: base.NewApp(name),
+		App:         base.NewApp(name),
+		TodoService: svc,
 	}
 
 	// Server
-	jas, err := jsonapi.NewServer("json-api-server", ts, jsonapi.Config{
+	jas, err := jsonapi.NewServer("json-api-server", svc, jsonapi.Config{
 		TracingLevel: cfg.Tracing.Level,
 	})
 	if err != nil {
@@ -46,7 +50,7 @@ func NewApp(name string, ts *service.Todo, cfg *Config) (*App, error) {
 	app.JSONAPIServer = jas
 
 	// Router
-	h := openapi.Handler(ts)
+	h := openapi.Handler(svc)
 	jas.InitJSONAPIRouter(h)
 
 	return &app, nil

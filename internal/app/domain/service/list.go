@@ -4,7 +4,7 @@ package service
 import "github.com/adrianpk/cirrustodo/internal/base"
 
 type (
-	Todo struct {
+	List struct {
 		base.Worker
 	}
 )

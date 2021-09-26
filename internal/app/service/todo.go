@@ -1,4 +1,4 @@
-// Package service provides application primitives for managing todo lists.
+// Package service provides application resources for managing todo lists.
 package service
 
 import (
@@ -13,9 +13,9 @@ import (
 type (
 	Todo struct {
 		base.Worker
-		repoRead      repo.ListRead
-		repoWrite     repo.ListWrite
-		domainService *service.Todo
+		repoRead    repo.ListRead
+		repoWrite   repo.ListWrite
+		listService *service.List
 	}
 )
 
