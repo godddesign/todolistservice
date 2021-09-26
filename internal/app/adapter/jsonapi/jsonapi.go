@@ -3,8 +3,8 @@ package jsonapi
 import (
 	"errors"
 
-	"github.com/adrianpk/cirrustodo/internal/app/service"
-	"github.com/adrianpk/cirrustodo/internal/base"
+	"github.com/adrianpk/godddtodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (

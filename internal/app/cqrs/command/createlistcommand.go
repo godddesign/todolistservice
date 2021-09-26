@@ -3,7 +3,7 @@ package command
 import (
 	"context"
 
-	"github.com/adrianpk/cirrustodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/app/service"
 )
 
 type (

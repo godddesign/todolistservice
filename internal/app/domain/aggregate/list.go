@@ -1,7 +1,7 @@
 package aggregate
 
 import (
-	"github.com/adrianpk/cirrustodo/internal/app/domain/entity"
+	"github.com/adrianpk/godddtodo/internal/app/domain/entity"
 	"github.com/google/uuid"
 )
 

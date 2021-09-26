@@ -4,8 +4,8 @@ package mongo
 import (
 	"errors"
 
-	"github.com/adrianpk/cirrustodo/internal/base"
-	db "github.com/adrianpk/cirrustodo/internal/base/db/mongo"
+	"github.com/adrianpk/godddtodo/internal/base"
+	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

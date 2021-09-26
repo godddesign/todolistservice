@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/adrianpk/cirrustodo/internal/app/adapter/repo"
-	"github.com/adrianpk/cirrustodo/internal/app/domain/service"
-	"github.com/adrianpk/cirrustodo/internal/base"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/repo"
+	"github.com/adrianpk/godddtodo/internal/app/domain/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (

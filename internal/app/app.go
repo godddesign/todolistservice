@@ -3,11 +3,11 @@ package app
 import (
 	"sync"
 
-	"github.com/adrianpk/cirrustodo/internal/app/adapter/jsonapi"
-	"github.com/adrianpk/cirrustodo/internal/app/cqrs/command"
-	"github.com/adrianpk/cirrustodo/internal/app/ports/openapi"
-	"github.com/adrianpk/cirrustodo/internal/app/service"
-	"github.com/adrianpk/cirrustodo/internal/base"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
+	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
+	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
+	"github.com/adrianpk/godddtodo/internal/app/service"
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 type (

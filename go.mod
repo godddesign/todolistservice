@@ -1,4 +1,4 @@
-module github.com/adrianpk/cirrustodo
+module github.com/adrianpk/godddtodo
 
 go 1.16
 

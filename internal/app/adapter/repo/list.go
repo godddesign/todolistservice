@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/adrianpk/cirrustodo/internal/app/domain/aggregate"
+	"github.com/adrianpk/godddtodo/internal/app/domain/aggregate"
 	"github.com/google/uuid"
 )
 
