@@ -3,7 +3,7 @@ package app
 import (
 	"sync"
 
-	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/driving/jsonapi"
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
 	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
 	"github.com/adrianpk/godddtodo/internal/app/service"
@@ -32,14 +32,19 @@ type (
 )
 
 // NewApp initializes new App worker instance
-func NewApp(name string, svc *service.Todo, cfg *Config) (*App, error) {
-	app := App{
+func NewApp(name string, svc *service.Todo, cfg *Config) (app *App, err error) {
+	app = &App{
 		App:         base.NewApp(name),
 		TodoService: svc,
 	}
 
+	err = app.initCommands()
+	if err != nil {
+		return nil, err
+	}
+
 	// Server
-	jas, err := jsonapi.NewServer("json-api-server", svc, jsonapi.Config{
+	jas, err := jsonapi.NewServer("json-api-server", jsonapi.Config{
 		TracingLevel: cfg.Tracing.Level,
 	})
 	if err != nil {
@@ -50,15 +55,21 @@ func NewApp(name string, svc *service.Todo, cfg *Config) (*App, error) {
 	app.JSONAPIServer = jas
 
 	// Router
-	h := openapi.Handler(svc)
+	rm, err := jsonapi.NewRequestManager(app.CQRS)
+	if err != nil {
+		return nil, err
+	}
+
+	h := openapi.Handler(rm)
 	jas.InitJSONAPIRouter(h)
 
-	return &app, nil
+	return app, nil
 }
 
 // Init app
 func (app *App) Init() (err error) {
-	return app.initCommands()
+	// TODO
+	return nil
 }
 
 // Start app
@@ -80,13 +91,15 @@ func (app *App) Stop() {
 }
 
 func (app *App) initCommands() (err error) {
-	server := app.JSONAPIServer
-	app.AddCommand(&base.SampleCommand)
-	app.AddCommand(command.NewCreateListCommand(server.Todo))
-	//app.AddCommand(command.NewAddItemCommand(server.TodoService))
-	//app.AddCommand(command.NewGetItemCommand(server.TodoService))
-	//app.AddCommand(command.NewUpdateItemCommand(server.TodoService))
-	//app.AddCommand(command.NewDeleteItemCommand(server.TodoService))
-	//app.AddCommand(command.NewDeleteListCommand(server.TodoService))
-	return err
+	app.AddCommand(&base.SampleCommand) // TODO: Remove
+	app.AddCommand(command.NewCreateListCommand(app.TodoService))
+	//app.AddCommand(command.NewAddItemCommand(app.TodoService))
+	//app.AddCommand(command.NewGetItemCommand(app.TodoService))
+	//app.AddCommand(command.NewUpdateItemCommand(app.TodoService))
+	//app.AddCommand(command.NewDeleteItemCommand(app.TodoService))
+	//app.AddCommand(command.NewDeleteListCommand(app.TodoService))
+
+	// TODO: Implement error return for command creation fail
+
+	return nil
 }

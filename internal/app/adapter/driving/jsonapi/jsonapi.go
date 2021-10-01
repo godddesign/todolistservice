@@ -1,9 +1,6 @@
 package jsonapi
 
 import (
-	"errors"
-
-	"github.com/adrianpk/godddtodo/internal/app/service"
 	"github.com/adrianpk/godddtodo/internal/base"
 )
 
@@ -11,7 +8,7 @@ type (
 	Server struct {
 		*base.Server
 		Config
-		*service.Todo
+		*base.CQRSManager
 	}
 
 	Config struct {
@@ -19,11 +16,7 @@ type (
 	}
 )
 
-func NewServer(name string, ts *service.Todo, cfg Config) (server *Server, err error) {
-	if ts == nil {
-		return server, errors.New("todo app service is nil")
-	}
-
+func NewServer(name string, cfg Config) (server *Server, err error) {
 	jas, err := base.NewServer(name, cfg.TracingLevel)
 	if err != nil {
 		return nil, err
@@ -32,6 +25,5 @@ func NewServer(name string, ts *service.Todo, cfg Config) (server *Server, err e
 	return &Server{
 		Server: jas,
 		Config: cfg,
-		Todo:   ts,
 	}, nil
 }

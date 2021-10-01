@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/adrianpk/godddtodo/internal/app"
-	repo "github.com/adrianpk/godddtodo/internal/app/adapter/repo/mongo"
+	repo "github.com/adrianpk/godddtodo/internal/app/adapter/driver/repo/mongo"
 	"github.com/adrianpk/godddtodo/internal/app/service"
 	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
 )

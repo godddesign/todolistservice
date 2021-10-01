@@ -4,7 +4,6 @@ import "errors"
 
 type (
 	CQRSManager struct {
-		Service  *Service
 		Commands CommandSet
 		Queries  QuerySet
 	}
@@ -36,7 +35,6 @@ var (
 
 func NewCQRSManager(svc *Service) *CQRSManager {
 	return &CQRSManager{
-		Service:  svc,
 		Commands: CommandSet{},
 		Queries:  QuerySet{},
 	}
@@ -52,6 +50,11 @@ func (cqrs CQRSManager) AddCommand(c Command) error {
 	return nil
 }
 
+func (cqrs CQRSManager) FindCommand(name string) (cmd Command, ok bool) {
+	cmd, ok = cqrs.Commands[name]
+	return cmd, ok
+}
+
 func (cqrs CQRSManager) AddQuery(q Query) error {
 	if q.Name() == "" {
 		errors.New("query name is empty")
@@ -60,6 +63,11 @@ func (cqrs CQRSManager) AddQuery(q Query) error {
 	cqrs.Queries[q.Name()] = q
 
 	return nil
+}
+
+func (cqrs CQRSManager) FindQuery(name string) (qry Query, ok bool) {
+	qry, ok = cqrs.Queries[name]
+	return qry, ok
 }
 
 func (bc *BaseCommand) Name() string {

@@ -3,9 +3,8 @@ package service
 
 import (
 	"errors"
-	"net/http"
 
-	"github.com/adrianpk/godddtodo/internal/app/adapter/repo"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/driver/repo"
 	"github.com/adrianpk/godddtodo/internal/app/domain/service"
 	"github.com/adrianpk/godddtodo/internal/base"
 )
@@ -13,6 +12,7 @@ import (
 type (
 	Todo struct {
 		base.Worker
+		cqrs        *base.CQRSManager
 		repoRead    repo.ListRead
 		repoWrite   repo.ListWrite
 		listService *service.List
@@ -41,8 +41,4 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (svc 
 	}
 
 	return svc, nil
-}
-
-func (todo *Todo) CreateList(w http.ResponseWriter, r *http.Request) {
-	panic("not implemented")
 }
