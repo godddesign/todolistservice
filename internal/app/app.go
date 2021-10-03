@@ -91,8 +91,9 @@ func (app *App) Stop() {
 }
 
 func (app *App) initCommands() (err error) {
+	tl := app.JSONAPIServer.TracingLevel
 	app.AddCommand(&base.SampleCommand) // TODO: Remove
-	app.AddCommand(command.NewCreateListCommand(app.TodoService))
+	app.AddCommand(command.NewCreateListCommand(app.TodoService, tl))
 	//app.AddCommand(command.NewAddItemCommand(app.TodoService))
 	//app.AddCommand(command.NewGetItemCommand(app.TodoService))
 	//app.AddCommand(command.NewUpdateItemCommand(app.TodoService))

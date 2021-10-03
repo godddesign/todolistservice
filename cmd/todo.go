@@ -65,9 +65,6 @@ func main() {
 		exit(err)
 	}
 
-	// App dependencies
-	a.JSONAPIServer.SetService(ts)
-
 	// Init service
 	err = a.Init()
 	if err != nil {

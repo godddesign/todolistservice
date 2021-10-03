@@ -1,6 +1,9 @@
 package base
 
-import "errors"
+import (
+	"context"
+	"errors"
+)
 
 type (
 	CQRSManager struct {
@@ -13,6 +16,7 @@ type (
 
 	Command interface {
 		Name() string
+		HandleFunc() func(ctc context.Context, data interface{}) (err error)
 	}
 
 	Query interface {
@@ -37,6 +41,12 @@ func NewCQRSManager(svc *Service) *CQRSManager {
 	return &CQRSManager{
 		Commands: CommandSet{},
 		Queries:  QuerySet{},
+	}
+}
+
+func NewBaseCommand(name string) *BaseCommand {
+	return &BaseCommand{
+		name: name,
 	}
 }
 
@@ -72,4 +82,8 @@ func (cqrs CQRSManager) FindQuery(name string) (qry Query, ok bool) {
 
 func (bc *BaseCommand) Name() string {
 	return bc.name
+}
+
+func (bc *BaseCommand) HandleFunc() (f func(ctx context.Context, data interface{}) (err error)) {
+	return f
 }

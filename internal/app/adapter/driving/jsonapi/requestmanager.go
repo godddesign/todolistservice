@@ -34,9 +34,10 @@ func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch cmd := c.(type) {
-	case command.CreateListCommand:
+	case *command.CreateListCommand:
 		data := ToCreateListCommandData(r)
-		cmd.Handle(r.Context(), data)
+
+		cmd.HandleFunc()(r.Context(), data)
 
 	default:
 		// TODO: Write error response
