@@ -2,7 +2,6 @@ package base
 
 import (
 	"context"
-	"errors"
 )
 
 type (
@@ -37,7 +36,7 @@ var (
 	SampleQuery   = BaseQuery{name: "sample-query"}
 )
 
-func NewCQRSManager(svc *Service) *CQRSManager {
+func NewCQRSManager() *CQRSManager {
 	return &CQRSManager{
 		Commands: CommandSet{},
 		Queries:  QuerySet{},
@@ -50,14 +49,8 @@ func NewBaseCommand(name string) *BaseCommand {
 	}
 }
 
-func (cqrs CQRSManager) AddCommand(c Command) error {
-	if c.Name() == "" {
-		errors.New("command name is empty")
-	}
-
-	cqrs.Commands[c.Name()] = c
-
-	return nil
+func (cqrs CQRSManager) AddCommand(cmd Command) {
+	cqrs.Commands[cmd.Name()] = cmd
 }
 
 func (cqrs CQRSManager) FindCommand(name string) (cmd Command, ok bool) {
@@ -65,14 +58,8 @@ func (cqrs CQRSManager) FindCommand(name string) (cmd Command, ok bool) {
 	return cmd, ok
 }
 
-func (cqrs CQRSManager) AddQuery(q Query) error {
-	if q.Name() == "" {
-		errors.New("query name is empty")
-	}
-
-	cqrs.Queries[q.Name()] = q
-
-	return nil
+func (cqrs CQRSManager) AddQuery(qry Query) {
+	cqrs.Queries[qry.Name()] = qry
 }
 
 func (cqrs CQRSManager) FindQuery(name string) (qry Query, ok bool) {

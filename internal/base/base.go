@@ -11,22 +11,20 @@ import (
 type (
 	// App description
 	App struct {
-		name     string
-		revision string
-
-		// CQRS
-		CQRS *CQRSManager
+		name    string
+		version string
 
 		// Misc
 		cancel context.CancelFunc
 	}
 )
 
-func NewApp(name string) *App {
+func NewApp(name, version string) *App {
 	name = GenName(name, "app")
 
 	return &App{
-		name: name,
+		name:    name,
+		version: version,
 	}
 }
 
@@ -34,19 +32,15 @@ func (app *App) Name() string {
 	return app.name
 }
 
+func (app *App) Version() string {
+	return app.version
+}
+
 func GenName(name, defName string) string {
 	if strings.Trim(name, " ") == "" {
 		return fmt.Sprintf("%s-%s", defName, nameSufix())
 	}
 	return name
-}
-
-func (a *App) AddCommand(command Command) {
-	a.CQRS.AddCommand(command)
-}
-
-func (a *App) AddQuery(query Query) {
-	a.CQRS.AddQuery(query)
 }
 
 func nameSufix() string {

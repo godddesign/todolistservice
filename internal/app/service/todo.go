@@ -11,7 +11,8 @@ import (
 
 type (
 	Todo struct {
-		base.Worker
+		*base.BaseWorker
+		config      Config
 		cqrs        *base.CQRSManager
 		repoRead    repo.ListRead
 		repoWrite   repo.ListWrite
@@ -25,20 +26,28 @@ type (
 	}
 )
 
-func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (svc Todo, err error) {
+func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (Todo, error) {
+	var svc Todo
+
 	if rr == nil {
-		return svc, errors.New("nil read repo")
+		return svc, errors.New("no read repo")
 	}
 
 	if rw == nil {
-		return svc, errors.New("nil write repo")
+		return svc, errors.New("no write repo")
 	}
 
 	svc = Todo{
-		Worker:    base.NewWorker(name, cfg.TracingLevel),
-		repoRead:  rr,
-		repoWrite: rw,
+		BaseWorker: base.NewWorker(name, cfg.TracingLevel),
+		config:     cfg,
+		repoRead:   rr,
+		repoWrite:  rw,
 	}
 
 	return svc, nil
+}
+
+func (t *Todo) CreateList(name, description string) error {
+	t.SendDebugf("CreateList name: '%s', description: '%s'", name, description)
+	return nil
 }

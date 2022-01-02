@@ -20,20 +20,16 @@ type (
 
 const listColl = "list"
 
-func NewListRead(name string, conn *db.Client, cfg Config) (lr *ListRead) {
-	lr = &ListRead{
+func NewListRead(name string, conn *db.Client, cfg Config) *ListRead {
+	return &ListRead{
 		Repo: NewRepo(name, conn, listColl, cfg),
 	}
-
-	return lr
 }
 
-func NewListWrite(name string, conn *db.Client, cfg Config) (lw *ListWrite) {
-	lw = &ListWrite{
+func NewListWrite(name string, conn *db.Client, cfg Config) *ListWrite {
+	return &ListWrite{
 		Repo: NewRepo(name, conn, listColl, cfg),
 	}
-
-	return lw
 }
 
 func (lr *ListRead) GetAll(ctx context.Context) (lists []*aggregate.List, err error) {

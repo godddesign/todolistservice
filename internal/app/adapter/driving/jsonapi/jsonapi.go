@@ -2,21 +2,19 @@ package jsonapi
 
 import (
 	"github.com/adrianpk/godddtodo/internal/base"
+	"net/http"
 )
 
 type (
 	Server struct {
 		*base.Server
-		Config
 		*base.CQRSManager
-	}
-
-	Config struct {
-		TracingLevel string
+		Config *Config
+		Router http.Handler
 	}
 )
 
-func NewServer(name string, cfg Config) (server *Server, err error) {
+func NewServer(name string, cfg *Config) (server *Server, err error) {
 	jas, err := base.NewServer(name, cfg.TracingLevel)
 	if err != nil {
 		return nil, err

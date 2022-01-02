@@ -12,6 +12,7 @@ import (
 type (
 	Repo struct {
 		*base.BaseWorker
+		config     Config
 		conn       *db.Client
 		collection string
 	}
@@ -24,6 +25,7 @@ type (
 func NewRepo(name string, conn *db.Client, collection string, cfg Config) *Repo {
 	return &Repo{
 		BaseWorker: base.NewWorker(name, cfg.TracingLevel),
+		config:     cfg,
 		conn:       conn,
 		collection: collection,
 	}
