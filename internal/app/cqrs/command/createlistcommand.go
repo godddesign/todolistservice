@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/adrianpk/godddtodo/internal/app/service"
 	"github.com/adrianpk/godddtodo/internal/base"
 )
@@ -22,13 +21,13 @@ type (
 	}
 )
 
-func NewCreateListCommand(todoService *service.Todo, tracinglevel string) *CreateListCommand {
+func NewCreateListCommand(todoService *service.Todo, tracingLevel string) *CreateListCommand {
 	if todoService == nil {
 		panic("nil Todo service")
 	}
 
 	return &CreateListCommand{
-		BaseWorker:  base.NewWorker("create-list-command", tracinglevel),
+		BaseWorker:  base.NewWorker("create-list-command", tracingLevel),
 		BaseCommand: base.NewBaseCommand("create-list"),
 		todoService: todoService,
 	}
@@ -42,21 +41,25 @@ func (c *CreateListCommand) HandleFunc() (f func(ctx context.Context, data inter
 	return c.handle
 }
 
-func (c *CreateListCommand) handle(ctx context.Context, data interface{}) (err error) {
+func (c *CreateListCommand) handle(ctx context.Context, data interface{}) error {
+	var err error
+
 	defer func() {
-		// TODO: Trace command error: name, data, error
 		if err != nil {
-			c.SendDebugf("error handling %s: %v", c.Name(), err)
+			c.SendErrorf("command %s error: %w", c.Name(), err)
 		}
 	}()
 
 	switch d := data.(type) {
 	case CreateListCommandData:
-		// TODO: Use c.todoService to do something meaningful with data
-		fmt.Printf("Procesing %+v: ", d)
+		c.SendDebugf("Processing %s with %+v", c.Name(), d)
+
+		err = c.todoService.CreateList(d.Name, d.Description)
+		if err != nil {
+			return fmt.Errorf("%s error: %w", c.Name(), err)
+		}
 
 	default:
-		// TODO: Write error response
 		return errors.New("wrong command data")
 	}
 

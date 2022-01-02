@@ -164,6 +164,8 @@ func (t *Tracer) SaveTrace(trace Trace) {
 		return
 	}
 
+	log.Printf("%+v", trace)
+
 	select {
 	case t.traces <- trace:
 		// Sent is enough

@@ -8,6 +8,9 @@ test:
 	go clean -testcache
 	go test ./... -v
 
+run:
+	go run cmd/todo.go
+
 .PHONY: openapihttp
 openapihttp:
 	oapi-codegen -generate types -o internal/app/ports/openapi/todotypes.go -package openapi api/openapi/todo.yml

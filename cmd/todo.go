@@ -16,7 +16,8 @@ import (
 type contextKey string
 
 const (
-	appName = "todo"
+	name    = "todo"
+	version = "v0.0.1"
 )
 
 var (
@@ -24,7 +25,9 @@ var (
 )
 
 func main() {
-	cfg := app.LoadConfig()
+	// App
+	a := app.NewApp(name, version)
+	cfg := a.LoadConfig()
 
 	// Context
 	ctx, cancel := context.WithCancel(context.Background())
@@ -50,7 +53,7 @@ func main() {
 		TracingLevel: cfg.Tracing.Level,
 	})
 
-	// App service
+	// Service
 	ts, err := service.NewTodo("todo-app-service", lrr, lwr, service.Config{
 		TracingLevel: cfg.Tracing.Level,
 	})
@@ -59,30 +62,19 @@ func main() {
 		exit(err)
 	}
 
-	// App
-	a, err := app.NewApp(appName, &ts, cfg)
+	a.TodoService = &ts
+
+	// Init & Start
+	err = a.InitAndStart()
 	if err != nil {
 		exit(err)
 	}
 
-	// Init service
-	err = a.Init()
-	if err != nil {
-		exit(err)
-	}
-
-	// Start service
-	err = a.Start()
-	if err != nil {
-		exit(err)
-	}
-
-	log.Fatalf("%s stoped: %s", appName, err)
+	log.Fatalf("%s stoped: %s (%s)", a.Name(), a.Version(), err)
 }
 
 func exit(err error) {
 	log.Fatal(err)
-	os.Exit(1)
 }
 
 func initExitMonitor(ctx context.Context, cancel context.CancelFunc) {

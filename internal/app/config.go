@@ -27,21 +27,25 @@ type (
 	}
 )
 
-func LoadConfig() *Config {
-	c := new(Config)
+func (app *App) LoadConfig() *Config {
+	if app.Config == nil {
+		app.Config = new(Config)
+	}
+
+	cfg := app.Config
 
 	// Server
-	flag.IntVar(&c.Server.JSONAPIPort, "json-api-port", 8081, "JSON API server port")
+	flag.IntVar(&cfg.Server.JSONAPIPort, "json-api-port", 8081, "JSON API server port")
 
 	// Mongo
-	flag.StringVar(&c.Mongo.Host, "mongo-host", "localhost", "Mongo host")
-	flag.IntVar(&c.Mongo.Port, "mongo-port", 8081, "Mongo port")
-	flag.StringVar(&c.Mongo.User, "mongo-user", "", "Mongo user")
-	flag.StringVar(&c.Mongo.Pass, "mongo-pass", "", "Mongo pass")
-	flag.StringVar(&c.Mongo.Database, "mongo-database", "", "Mongo database")
-	flag.IntVar(&c.Mongo.MaxRetries, "mongo-max-reties", 10, "Mongo port")
+	flag.StringVar(&cfg.Mongo.Host, "mongo-host", "localhost", "Mongo host")
+	flag.IntVar(&cfg.Mongo.Port, "mongo-port", 8081, "Mongo port")
+	flag.StringVar(&cfg.Mongo.User, "mongo-user", "", "Mongo user")
+	flag.StringVar(&cfg.Mongo.Pass, "mongo-pass", "", "Mongo pass")
+	flag.StringVar(&cfg.Mongo.Database, "mongo-database", "", "Mongo database")
+	flag.IntVar(&cfg.Mongo.MaxRetries, "mongo-max-reties", 10, "Mongo port")
 
-	return c
+	return cfg
 }
 
 func (m *Mongo) MaxRetriesUInt64() uint64 {

@@ -1,12 +1,13 @@
 package jsonapi
 
 import (
+	"github.com/adrianpk/godddtodo/internal/base"
 	"net/http"
-
-	"github.com/go-chi/chi"
 )
 
 func (server *Server) InitJSONAPIRouter(h http.Handler) {
-	r := chi.NewRouter()
+	r := base.NewRouter("json-api-router", server.Config.TracingLevel)
 	r.Mount("/", h)
+
+	server.SetRouter(r)
 }

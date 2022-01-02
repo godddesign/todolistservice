@@ -1,7 +1,7 @@
 package jsonapi
 
 import (
-	"errors"
+	"encoding/json"
 	"net/http"
 
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
@@ -10,43 +10,58 @@ import (
 
 type (
 	RequestManager struct {
+		*base.BaseWorker
 		cqrs *base.CQRSManager
+	}
+
+	Config struct {
+		TracingLevel string
 	}
 )
 
-func NewRequestManager(cqrs *base.CQRSManager) (rm *RequestManager, err error) {
-	if cqrs == nil {
-		return rm, errors.New("nil CQRS manager")
-	}
-
+func NewRequestManager(cqrs *base.CQRSManager, cfg *Config) (rm *RequestManager) {
 	return &RequestManager{
-		cqrs: cqrs,
-	}, nil
+		BaseWorker: base.NewWorker("request-manager", cfg.TracingLevel),
+		cqrs:       cqrs,
+	}
 
 }
 
 func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
-	// WIP: Hardcoded command name, implement a pre dinamic dispatcher
-	c, ok := rm.cqrs.FindCommand("create-list")
+	name := "create-list"
+	// WIP: Hardcoded command name, implement a pre dynamic dispatcher
+	cmd, ok := rm.cqrs.FindCommand(name)
 	if !ok {
-		// TODO: Write error response
-		panic("not implemented")
+		rm.SendErrorf("command not found: %+w", cmd)
+		panic("write error response")
 	}
 
-	switch cmd := c.(type) {
+	switch cmd := cmd.(type) {
 	case *command.CreateListCommand:
-		data := ToCreateListCommandData(r)
+		data, err := ToCreateListCommandData(r)
+		if err != nil {
+			rm.SendErrorf("create list error: %w", err)
+		}
 
-		cmd.HandleFunc()(r.Context(), data)
+		err = cmd.HandleFunc()(r.Context(), data)
+		if err != nil {
+			rm.SendErrorf("create list error: %w", err)
+		}
 
 	default:
-		// TODO: Write error response
-		panic("not implemented")
+		rm.SendErrorf("wrong command: %+v", cmd)
 	}
 }
 
+// ToCreateListCommandData command
 // WIP: Implement, rename and move to ports(?) package
-func ToCreateListCommandData(r *http.Request) command.CreateListCommandData {
-	// TODO: Extract data from request and create a command data
-	return command.CreateListCommandData{}
+func ToCreateListCommandData(r *http.Request) (command.CreateListCommandData, error) {
+	cmdData := command.CreateListCommandData{}
+
+	err := json.NewDecoder(r.Body).Decode(&cmdData)
+	if err != nil {
+		return cmdData, err
+	}
+
+	return cmdData, nil
 }
