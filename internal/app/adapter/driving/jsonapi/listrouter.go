@@ -1,8 +1,9 @@
 package jsonapi
 
 import (
-	"github.com/adrianpk/godddtodo/internal/base"
 	"net/http"
+
+	"github.com/adrianpk/godddtodo/internal/base"
 )
 
 func (server *Server) InitJSONAPIRouter(h http.Handler) {

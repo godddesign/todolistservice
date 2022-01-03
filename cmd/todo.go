@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/adrianpk/godddtodo/internal/base"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/adrianpk/godddtodo/internal/base"
 
 	"github.com/adrianpk/godddtodo/internal/app"
 	repo "github.com/adrianpk/godddtodo/internal/app/adapter/driver/repo/mongo"

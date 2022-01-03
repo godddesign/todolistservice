@@ -2,11 +2,13 @@ package mongo
 
 import (
 	"context"
+
 	"github.com/adrianpk/godddtodo/internal/base"
+
+	"github.com/google/uuid"
 
 	"github.com/adrianpk/godddtodo/internal/app/domain/aggregate"
 	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
-	"github.com/google/uuid"
 )
 
 type (
