@@ -14,17 +14,19 @@ type (
 		name    string
 		version string
 
-		// Misc
+		log Logger
+
 		cancel context.CancelFunc
 	}
 )
 
-func NewApp(name, version string) *App {
+func NewApp(name, version string, log Logger) *App {
 	name = GenName(name, "app")
 
 	return &App{
 		name:    name,
 		version: version,
+		log:     log,
 	}
 }
 
@@ -34,6 +36,10 @@ func (app *App) Name() string {
 
 func (app *App) Version() string {
 	return app.version
+}
+
+func (app *App) Log() Logger {
+	return app.log
 }
 
 func GenName(name, defName string) string {

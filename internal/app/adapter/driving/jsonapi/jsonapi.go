@@ -11,11 +11,14 @@ type (
 		*base.CQRSManager
 		Config *Config
 		Router http.Handler
+		log    base.Logger
 	}
+
+	Config struct{}
 )
 
-func NewServer(name string, cfg *Config) (server *Server, err error) {
-	jas, err := base.NewServer(name, cfg.TracingLevel)
+func NewServer(name string, cfg *Config, log base.Logger) (server *Server, err error) {
+	jas, err := base.NewServer(name, log)
 	if err != nil {
 		return nil, err
 	}

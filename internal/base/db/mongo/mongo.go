@@ -5,36 +5,34 @@ package mongo
 
 import (
 	"fmt"
-
-	"github.com/adrianpk/cirrus"
+	"github.com/adrianpk/godddtodo/internal/base"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (
 	Client struct {
-		*cirrus.BaseService
+		base.Service
 		*mongo.Client
 		config Config
 	}
 
 	Config struct {
-		Host         string
-		Port         int
-		User         string
-		Pass         string
-		Database     string
-		MaxRetries   uint64
-		TracingLevel string
+		Host       string
+		Port       int
+		User       string
+		Pass       string
+		Database   string
+		MaxRetries uint64
 	}
 )
 
 // NewMongoClient
-// NOTE: Other config parametes should be passed
-func NewMongoClient(name string, cfg Config) *Client {
+// NOTE: Other config parameters should be passed
+func NewMongoClient(name string, cfg Config, log base.Logger) *Client {
 	return &Client{
-		BaseService: cirrus.NewService(name, cfg.TracingLevel),
-		config:      cfg,
+		Service: base.NewBaseService(name, log),
+		config:  cfg,
 	}
 }
 
@@ -50,7 +48,7 @@ func (c *Client) Init() (ok chan bool) {
 			return
 		}
 
-		c.SendInfof("%s service initialized", c.Name())
+		c.Log().Infof("%s service initialized", c.Name())
 
 		ok <- true
 	}()

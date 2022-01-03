@@ -16,9 +16,9 @@ type (
 	}
 )
 
-func NewRouter(name, tracingLevel string) *Router {
+func NewRouter(name string, log Logger) *Router {
 	rt := Router{
-		BaseWorker: NewWorker(name, tracingLevel),
+		BaseWorker: NewWorker(name, log),
 		Router:     chi.NewRouter(),
 	}
 

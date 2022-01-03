@@ -41,42 +41,42 @@ const (
 	SessionKey = "session"
 )
 
-func NewServer(name, tracingLevel string) (*Server, error) {
+func NewServer(name string, log Logger) (*Server, error) {
 	server := Server{
-		BaseWorker: NewWorker(name, tracingLevel),
+		BaseWorker: NewWorker(name, log),
 	}
 
 	return &server, nil
 }
 
-func (server *Server) Name() string {
-	return server.Name()
+func (srv *Server) Name() string {
+	return srv.name
 }
 
-func (server *Server) SetRouter(r *Router) {
-	server.router = r
+func (srv *Server) SetRouter(r *Router) {
+	srv.router = r
 }
 
-func (server *Server) SetService(s Service) {
-	server.service = s
+func (srv *Server) SetService(s Service) {
+	srv.service = s
 }
 
-func (server *Server) Start(port int) (err error) {
-	if server.router == nil {
+func (srv *Server) Start(port int) (err error) {
+	if srv.router == nil {
 		return errors.New("server router not set")
 	}
 
 	p := fmt.Sprintf(":%d", port)
 
-	server.SendInfof("Server %s initializing at port %s", server.Name, port)
+	srv.Log().Infof("Server %s initializing at port %s", srv.Name(), p)
 
-	err = http.ListenAndServe(p, server.router)
+	err = http.ListenAndServe(p, srv.router)
 
 	return err
 }
 
-func (server *Server) Service() Service {
-	return server.service
+func (srv *Server) Service() Service {
+	return srv.service
 }
 
 // Resource path functions

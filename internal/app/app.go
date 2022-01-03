@@ -35,19 +35,21 @@ type (
 	}
 )
 
-func NewApp(name, version string) *App {
+func NewApp(name, version string, log base.Logger) *App {
 	return &App{
-		App:  base.NewApp(name, version),
+		App:  base.NewApp(name, version, log),
 		CQRS: base.NewCQRSManager(),
 	}
+}
+
+func (app *App) SetLogLevel(level string) {
+	app.Log().SetLevel(app.Config.Level)
 }
 
 // Init app
 func (app *App) Init() error {
 	// Server
-	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{
-		TracingLevel: app.Config.Tracing.Level,
-	})
+	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{}, app.Log())
 	if err != nil {
 		return err
 	}
@@ -59,7 +61,7 @@ func (app *App) Init() error {
 	app.initCommands()
 
 	// Router
-	rm := jsonapi.NewRequestManager(app.CQRS, &jsonapi.Config{TracingLevel: app.Config.Tracing.Level})
+	rm := jsonapi.NewRequestManager(app.CQRS, app.Log())
 
 	h := openapi.Handler(rm)
 	jas.InitJSONAPIRouter(h)
@@ -101,9 +103,9 @@ func (app *App) Stop() {
 }
 
 func (app *App) initCommands() {
-	tl := app.JSONAPIServer.Config.TracingLevel
+	log := app.Log()
 	app.AddCommand(&base.SampleCommand) // TODO: Remove
-	app.AddCommand(command.NewCreateListCommand(app.TodoService, tl))
+	app.AddCommand(command.NewCreateListCommand(app.TodoService, log))
 	//app.AddCommand(command.NewAddItemCommand(app.todoService))
 	//app.AddCommand(command.NewGetItemCommand(app.todoService))
 	//app.AddCommand(command.NewUpdateItemCommand(app.todoService))
@@ -111,10 +113,10 @@ func (app *App) initCommands() {
 	//app.AddCommand(command.NewDeleteListCommand(app.todoService))
 }
 
-func (a *App) AddCommand(command base.Command) {
-	a.CQRS.AddCommand(command)
+func (app *App) AddCommand(command base.Command) {
+	app.CQRS.AddCommand(command)
 }
 
-func (a *App) AddQuery(query base.Query) {
-	a.CQRS.AddQuery(query)
+func (app *App) AddQuery(query base.Query) {
+	app.CQRS.AddQuery(query)
 }
