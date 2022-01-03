@@ -27,19 +27,19 @@ func (c *Client) retryConnection() (r chan retry) {
 		url := c.URL()
 
 		for i := 0; i <= int(c.config.MaxRetries); i++ {
-			c.SendInfof("dialing to mongo at %s", url)
+			c.Log().Infof("dialing to mongo at %s", url)
 
 			opts := options.Client().ApplyURI(url)
 
 			client, err := mongo.Connect(context.TODO(), opts)
 			if err != nil {
-				c.SendInfof("mongo connection error: %v\n", err)
+				c.Log().Infof("mongo connection error: %v\n", err)
 			}
 
 			err = client.Ping(context.TODO(), nil)
 
 			if err != nil {
-				c.SendInfof("mongo ping error: %v", err)
+				c.Log().Infof("mongo ping error: %v", err)
 
 				// Backoff
 				next := bo.NextBackOff()
@@ -52,8 +52,8 @@ func (c *Client) retryConnection() (r chan retry) {
 					return
 				}
 
-				c.SendInfof("connection attempt to Mongo failed: %v", err)
-				c.SendInfof("retrying connection to Mongo in %s seconds", next.String())
+				c.Log().Infof("connection attempt to Mongo failed: %v", err)
+				c.Log().Infof("retrying connection to Mongo in %s seconds", next.String())
 
 				time.Sleep(next)
 				continue

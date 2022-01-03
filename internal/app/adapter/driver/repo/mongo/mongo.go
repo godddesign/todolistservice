@@ -17,14 +17,12 @@ type (
 		collection string
 	}
 
-	Config struct {
-		TracingLevel string
-	}
+	Config struct{}
 )
 
-func NewRepo(name string, conn *db.Client, collection string, cfg Config) *Repo {
+func NewRepo(name string, conn *db.Client, collection string, cfg Config, log base.Logger) *Repo {
 	return &Repo{
-		BaseWorker: base.NewWorker(name, cfg.TracingLevel),
+		BaseWorker: base.NewWorker(name, log),
 		config:     cfg,
 		conn:       conn,
 		collection: collection,

@@ -21,13 +21,13 @@ type (
 	}
 )
 
-func NewCreateListCommand(todoService *service.Todo, tracingLevel string) *CreateListCommand {
+func NewCreateListCommand(todoService *service.Todo, log base.Logger) *CreateListCommand {
 	if todoService == nil {
 		panic("nil Todo service")
 	}
 
 	return &CreateListCommand{
-		BaseWorker:  base.NewWorker("create-list-command", tracingLevel),
+		BaseWorker:  base.NewWorker("create-list-command", log),
 		BaseCommand: base.NewBaseCommand("create-list"),
 		todoService: todoService,
 	}
@@ -46,13 +46,13 @@ func (c *CreateListCommand) handle(ctx context.Context, data interface{}) error 
 
 	defer func() {
 		if err != nil {
-			c.SendErrorf("command %s error: %w", c.Name(), err)
+			c.Log().Errorf("command %s error: %w", c.Name(), err)
 		}
 	}()
 
 	switch d := data.(type) {
 	case CreateListCommandData:
-		c.SendDebugf("Processing %s with %+v", c.Name(), d)
+		c.Log().Debugf("Processing %s with %+v", c.Name(), d)
 
 		err = c.todoService.CreateList(d.Name, d.Description)
 		if err != nil {

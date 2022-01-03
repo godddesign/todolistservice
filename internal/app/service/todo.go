@@ -26,7 +26,7 @@ type (
 	}
 )
 
-func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (Todo, error) {
+func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config, log base.Logger) (Todo, error) {
 	var svc Todo
 
 	if rr == nil {
@@ -38,7 +38,7 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (Todo
 	}
 
 	svc = Todo{
-		BaseWorker: base.NewWorker(name, cfg.TracingLevel),
+		BaseWorker: base.NewWorker(name, log),
 		config:     cfg,
 		repoRead:   rr,
 		repoWrite:  rw,
@@ -48,6 +48,6 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config) (Todo
 }
 
 func (t *Todo) CreateList(name, description string) error {
-	t.SendDebugf("CreateList name: '%s', description: '%s'", name, description)
+	t.Log().Infof("CreateList name: '%s', description: '%s'", name, description)
 	return nil
 }

@@ -6,7 +6,7 @@ type (
 	Config struct {
 		Server
 		Mongo
-		Tracing
+		Logging
 	}
 
 	Server struct {
@@ -22,14 +22,14 @@ type (
 		MaxRetries int
 	}
 
-	Tracing struct {
+	Logging struct {
 		Level string
 	}
 )
 
 func (app *App) LoadConfig() *Config {
 	if app.Config == nil {
-		app.Config = new(Config)
+		app.Config = &Config{}
 	}
 
 	cfg := app.Config

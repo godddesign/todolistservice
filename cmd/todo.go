@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"log"
+	"github.com/adrianpk/godddtodo/internal/base"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,12 +21,15 @@ const (
 )
 
 var (
-	a *app.App
+	a   *app.App
+	log base.Logger
 )
 
 func main() {
+	log = base.NewLogger("debug", true)
+
 	// App
-	a := app.NewApp(name, version)
+	a := app.NewApp(name, version, log)
 	cfg := a.LoadConfig()
 
 	// Context
@@ -35,28 +38,21 @@ func main() {
 
 	// Database
 	mgo := db.NewMongoClient("mongo-client", db.Config{
-		Host:         cfg.Mongo.Host,
-		Port:         cfg.Mongo.Port,
-		User:         cfg.Mongo.User,
-		Pass:         cfg.Mongo.Pass,
-		Database:     cfg.Mongo.Database,
-		MaxRetries:   cfg.Mongo.MaxRetriesUInt64(),
-		TracingLevel: cfg.Tracing.Level,
-	})
+		Host:       cfg.Mongo.Host,
+		Port:       cfg.Mongo.Port,
+		User:       cfg.Mongo.User,
+		Pass:       cfg.Mongo.Pass,
+		Database:   cfg.Mongo.Database,
+		MaxRetries: cfg.Mongo.MaxRetriesUInt64(),
+	}, log)
 
 	// Repo
-	lrr := repo.NewListRead("list-read-repo", mgo, repo.Config{
-		TracingLevel: cfg.Tracing.Level,
-	})
+	lrr := repo.NewListRead("list-read-repo", mgo, repo.Config{}, log)
 
-	lwr := repo.NewListWrite("list-write-repo", mgo, repo.Config{
-		TracingLevel: cfg.Tracing.Level,
-	})
+	lwr := repo.NewListWrite("list-write-repo", mgo, repo.Config{}, log)
 
 	// Service
-	ts, err := service.NewTodo("todo-app-service", lrr, lwr, service.Config{
-		TracingLevel: cfg.Tracing.Level,
-	})
+	ts, err := service.NewTodo("todo-app-service", lrr, lwr, service.Config{}, log)
 
 	if err != nil {
 		exit(err)
@@ -70,7 +66,7 @@ func main() {
 		exit(err)
 	}
 
-	log.Fatalf("%s stoped: %s (%s)", a.Name(), a.Version(), err)
+	log.Errorf("%s stopped: %s (%s)", a.Name(), a.Version(), err)
 }
 
 func exit(err error) {

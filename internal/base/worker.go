@@ -5,6 +5,7 @@ type (
 		Name() string
 		Init() error
 		Start() error
+		Log() Logger
 	}
 )
 
@@ -13,16 +14,16 @@ type (
 		name     string
 		didInit  bool
 		didStart bool
-		*Tracer
+		log      Logger
 	}
 )
 
-func NewWorker(name string, tracingLevel string) *BaseWorker {
+func NewWorker(name string, log Logger) *BaseWorker {
 	name = GenName(name, "worker")
 
 	return &BaseWorker{
-		name:   name,
-		Tracer: NewTracer(tracingLevel),
+		name: name,
+		log:  log,
 	}
 }
 
@@ -40,4 +41,8 @@ func (bw BaseWorker) Init() error {
 
 func (bw BaseWorker) Start() error {
 	return bw.Start()
+}
+
+func (bw BaseWorker) Log() Logger {
+	return bw.log
 }

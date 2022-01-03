@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"github.com/adrianpk/godddtodo/internal/base"
 
 	"github.com/adrianpk/godddtodo/internal/app/domain/aggregate"
 	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
@@ -20,15 +21,15 @@ type (
 
 const listColl = "list"
 
-func NewListRead(name string, conn *db.Client, cfg Config) *ListRead {
+func NewListRead(name string, conn *db.Client, cfg Config, log base.Logger) *ListRead {
 	return &ListRead{
-		Repo: NewRepo(name, conn, listColl, cfg),
+		Repo: NewRepo(name, conn, listColl, cfg, log),
 	}
 }
 
-func NewListWrite(name string, conn *db.Client, cfg Config) *ListWrite {
+func NewListWrite(name string, conn *db.Client, cfg Config, log base.Logger) *ListWrite {
 	return &ListWrite{
-		Repo: NewRepo(name, conn, listColl, cfg),
+		Repo: NewRepo(name, conn, listColl, cfg, log),
 	}
 }
 

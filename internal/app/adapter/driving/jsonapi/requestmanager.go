@@ -13,15 +13,11 @@ type (
 		*base.BaseWorker
 		cqrs *base.CQRSManager
 	}
-
-	Config struct {
-		TracingLevel string
-	}
 )
 
-func NewRequestManager(cqrs *base.CQRSManager, cfg *Config) (rm *RequestManager) {
+func NewRequestManager(cqrs *base.CQRSManager, log base.Logger) (rm *RequestManager) {
 	return &RequestManager{
-		BaseWorker: base.NewWorker("request-manager", cfg.TracingLevel),
+		BaseWorker: base.NewWorker("request-manager", log),
 		cqrs:       cqrs,
 	}
 
@@ -32,7 +28,7 @@ func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 	// WIP: Hardcoded command name, implement a pre dynamic dispatcher
 	cmd, ok := rm.cqrs.FindCommand(name)
 	if !ok {
-		rm.SendErrorf("command not found: %+w", cmd)
+		rm.Log().Errorf("command not found: %+w", cmd)
 		panic("write error response")
 	}
 
@@ -40,16 +36,16 @@ func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 	case *command.CreateListCommand:
 		data, err := ToCreateListCommandData(r)
 		if err != nil {
-			rm.SendErrorf("create list error: %w", err)
+			rm.Log().Errorf("create list error: %w", err)
 		}
 
 		err = cmd.HandleFunc()(r.Context(), data)
 		if err != nil {
-			rm.SendErrorf("create list error: %w", err)
+			rm.Log().Errorf("create list error: %w", err)
 		}
 
 	default:
-		rm.SendErrorf("wrong command: %+v", cmd)
+		rm.Log().Errorf("wrong command: %+v", cmd)
 	}
 }
 
