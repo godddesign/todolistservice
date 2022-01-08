@@ -6,14 +6,14 @@ import (
 
 type (
 	List struct {
-		id          uuid.UUID
-		userID      uuid.UUID
-		slug        string
-		tenantID    uuid.UUID
-		orgID       uuid.UUID
-		ownerID     uuid.UUID
-		name        string
-		description string
-		items       []*Item
+		ID          uuid.UUID
+		UserID      uuid.UUID
+		Slug        string
+		TenantID    uuid.UUID
+		OrgID       uuid.UUID
+		OwnerID     uuid.UUID
+		Name        string
+		Description string
+		Items       []Item
 	}
 )

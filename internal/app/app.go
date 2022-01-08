@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	jsonapi2 "github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
+	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
 	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
 	"github.com/adrianpk/godddtodo/internal/app/service"
@@ -23,7 +23,7 @@ type (
 		// CQRS
 		CQRS *base.CQRSManager
 
-		JSONAPIServer *jsonapi2.Server
+		JSONAPIServer *jsonapi.Server
 		//WebServer     *web.Server
 		//GRPCServer    *grpc.Server
 	}
@@ -49,7 +49,7 @@ func (app *App) SetLogLevel(level string) {
 // Init app
 func (app *App) Init() error {
 	// Server
-	jas, err := jsonapi2.NewServer("json-api-server", &jsonapi2.Config{}, app.Log())
+	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{}, app.Log())
 	if err != nil {
 		return err
 	}
@@ -61,9 +61,9 @@ func (app *App) Init() error {
 	app.initCommands()
 
 	// Router
-	rm := jsonapi2.NewRequestManager(app.CQRS, app.Log())
-
+	rm := jsonapi.NewRequestManager(app.CQRS, app.Log())
 	h := openapi.Handler(rm)
+
 	jas.InitJSONAPIRouter(h)
 
 	return nil
@@ -106,11 +106,11 @@ func (app *App) initCommands() {
 	log := app.Log()
 	app.AddCommand(&base.SampleCommand) // TODO: Remove
 	app.AddCommand(command.NewCreateListCommand(app.TodoService, log))
-	//app.AddCommand(command.NewAddItemCommand(app.todoService))
-	//app.AddCommand(command.NewGetItemCommand(app.todoService))
-	//app.AddCommand(command.NewUpdateItemCommand(app.todoService))
-	//app.AddCommand(command.NewDeleteItemCommand(app.todoService))
-	//app.AddCommand(command.NewDeleteListCommand(app.todoService))
+	//app.AddCommand(command.NewAddItemCommand(app.TodoService))
+	//app.AddCommand(command.NewGetItemCommand(app.TodoService))
+	//app.AddCommand(command.NewUpdateItemCommand(app.TodoService))
+	//app.AddCommand(command.NewDeleteItemCommand(app.TodoService))
+	//app.AddCommand(command.NewDeleteListCommand(app.TodoService))
 }
 
 func (app *App) AddCommand(command base.Command) {

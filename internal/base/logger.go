@@ -58,9 +58,9 @@ func newLogger(level string, flag int) *BaseLogger {
 		return &BaseLogger{
 			level: LogLevel.Debug,
 			flag:  flag,
-			debug: log.New(os.Stderr, "DEBUG: ", flag),
-			info:  log.New(os.Stderr, "INFO: ", flag),
-			error: log.New(os.Stderr, "ERROR: ", flag),
+			debug: log.New(os.Stderr, "[DBG] ", flag),
+			info:  log.New(os.Stderr, "[INF] ", flag),
+			error: log.New(os.Stderr, "[ERR] ", flag),
 		}
 
 	case LogLevel.Info:

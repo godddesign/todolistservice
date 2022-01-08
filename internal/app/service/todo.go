@@ -2,7 +2,11 @@
 package service
 
 import (
+	"context"
 	"errors"
+	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/adrianpk/godddtodo/internal/app/core"
 	"github.com/adrianpk/godddtodo/internal/app/repo"
@@ -47,7 +51,22 @@ func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config, log b
 	return svc, nil
 }
 
-func (t *Todo) CreateList(name, description string) error {
+func (t *Todo) CreateList(ctx context.Context, name, description string) error {
 	t.Log().Infof("CreateList name: '%s', description: '%s'", name, description)
-	return nil
+
+	uid := uuid.New()
+	slug := strings.Split(uid.String(), "-")[4]
+
+	// WIP: Filling empty fields with fake data
+	return t.repoWrite.Create(ctx, core.List{
+		ID:          uid,
+		UserID:      uuid.New(),
+		Slug:        slug,
+		TenantID:    uuid.New(),
+		OrgID:       uuid.New(),
+		OwnerID:     uuid.New(),
+		Name:        "list name",
+		Description: "list description",
+		Items:       []core.Item{},
+	})
 }

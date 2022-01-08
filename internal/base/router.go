@@ -27,7 +27,7 @@ func NewRouter(name string, log Logger) *Router {
 	rt.Use(middleware.Recoverer)
 	rt.Use(middleware.Timeout(60 * time.Second))
 	rt.Use(rt.MethodOverride)
-	rt.Use(rt.CSRFProtection)
+	// rt.Use(rt.CSRFProtection)
 
 	return &rt
 }

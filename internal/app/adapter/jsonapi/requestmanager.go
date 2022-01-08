@@ -2,6 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
@@ -25,23 +26,37 @@ func NewRequestManager(cqrs *base.CQRSManager, log base.Logger) (rm *RequestMana
 
 func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 	name := "create-list"
-	// WIP: Hardcoded command name, implement a pre dynamic dispatcher
+
 	cmd, ok := rm.cqrs.FindCommand(name)
 	if !ok {
-		rm.Log().Errorf("command not found: %+w", cmd)
-		panic("write error response")
+		err := fmt.Errorf("command '%s' not found", name)
+
+		rm.Log().Error(err.Error())
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	switch cmd := cmd.(type) {
 	case *command.CreateListCommand:
 		data, err := ToCreateListCommandData(r)
 		if err != nil {
-			rm.Log().Errorf("create list error: %w", err)
+			err := fmt.Errorf("wrong '%s' data: %+v", cmd.Name(), data)
+
+			rm.Log().Error(err.Error())
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		err = cmd.HandleFunc()(r.Context(), data)
 		if err != nil {
-			rm.Log().Errorf("create list error: %w", err)
+			err := fmt.Errorf("create list error: %+v", err.Error())
+
+			rm.Log().Error(err.Error())
+
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 	default:
@@ -50,11 +65,8 @@ func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 }
 
 // ToCreateListCommandData command
-// WIP: Implement, rename and move to ports(?) package
-func ToCreateListCommandData(r *http.Request) (command.CreateListCommandData, error) {
-	cmdData := command.CreateListCommandData{}
-
-	err := json.NewDecoder(r.Body).Decode(&cmdData)
+func ToCreateListCommandData(r *http.Request) (cmdData command.CreateListCommandData, err error) {
+	err = json.NewDecoder(r.Body).Decode(&cmdData)
 	if err != nil {
 		return cmdData, err
 	}

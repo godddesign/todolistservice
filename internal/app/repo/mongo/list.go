@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/adrianpk/godddtodo/internal/app/core"
 	"github.com/adrianpk/godddtodo/internal/base"
@@ -35,19 +36,19 @@ func NewListWrite(name string, conn *db.Client, cfg Config, log base.Logger) *Li
 	}
 }
 
-func (lr *ListRead) GetAll(ctx context.Context) (lists []*core.List, err error) {
+func (lr *ListRead) GetAll(ctx context.Context) (lists []core.List, err error) {
 	return lists, err
 }
 
-func (lr *ListRead) Get(ctx context.Context, uid uuid.UUID) (list *core.List, err error) {
+func (lr *ListRead) Get(ctx context.Context, uid uuid.UUID) (list core.List, err error) {
 	return list, err
 }
 
-func (lr *ListRead) GetBySlug(ctx context.Context, slug string) (list *core.List, err error) {
+func (lr *ListRead) GetBySlug(ctx context.Context, slug string) (list core.List, err error) {
 	return list, err
 }
 
-func (lr *ListRead) GetByName(ctx context.Context, name string) (list *core.List, err error) {
+func (lr *ListRead) GetByName(ctx context.Context, name string) (list core.List, err error) {
 	return list, err
 }
 
@@ -55,11 +56,11 @@ func (lr *ListRead) GetBySlugAndToken(ctx context.Context, slug, token string) (
 	return list, err
 }
 
-func (lw *ListWrite) Create(ctx context.Context, list *core.List) error {
-	return nil
+func (lw *ListWrite) Create(ctx context.Context, list core.List) error {
+	return errors.New("not implemented")
 }
 
-func (lw *ListWrite) Update(ctx context.Context, list *core.List) (err error) {
+func (lw *ListWrite) Update(ctx context.Context, list core.List) (err error) {
 	return err
 }
 

@@ -55,7 +55,7 @@ func (c *CreateListCommand) handle(ctx context.Context, data interface{}) error 
 	case CreateListCommandData:
 		c.Log().Debugf("Processing %s with %+v", c.Name(), d)
 
-		err = c.todoService.CreateList(d.Name, d.Description)
+		err = c.todoService.CreateList(ctx, d.Name, d.Description)
 		if err != nil {
 			return fmt.Errorf("%s error: %w", c.Name(), err)
 		}
