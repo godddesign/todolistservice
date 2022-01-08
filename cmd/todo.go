@@ -6,10 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/adrianpk/godddtodo/internal/app/repo/mongo"
 	"github.com/adrianpk/godddtodo/internal/base"
 
 	"github.com/adrianpk/godddtodo/internal/app"
-	repo "github.com/adrianpk/godddtodo/internal/app/adapter/driver/repo/mongo"
 	"github.com/adrianpk/godddtodo/internal/app/service"
 	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
 )
@@ -48,9 +48,9 @@ func main() {
 	}, log)
 
 	// Repo
-	lrr := repo.NewListRead("list-read-repo", mgo, repo.Config{}, log)
+	lrr := mongo.NewListRead("list-read-repo", mgo, mongo.Config{}, log)
 
-	lwr := repo.NewListWrite("list-write-repo", mgo, repo.Config{}, log)
+	lwr := mongo.NewListWrite("list-write-repo", mgo, mongo.Config{}, log)
 
 	// Service
 	ts, err := service.NewTodo("todo-app-service", lrr, lwr, service.Config{}, log)

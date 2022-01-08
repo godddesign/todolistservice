@@ -1,7 +1,6 @@
-package aggregate
+package core
 
 import (
-	"github.com/adrianpk/godddtodo/internal/app/domain/entity"
 	"github.com/google/uuid"
 )
 
@@ -15,6 +14,6 @@ type (
 		ownerID     uuid.UUID
 		name        string
 		description string
-		items       []*entity.Item
+		items       []*Item
 	}
 )

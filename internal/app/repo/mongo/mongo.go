@@ -4,9 +4,10 @@ package mongo
 import (
 	"errors"
 
+	"go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/adrianpk/godddtodo/internal/base"
 	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type (

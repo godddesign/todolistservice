@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/adrianpk/godddtodo/internal/app/adapter/driving/jsonapi"
+	jsonapi2 "github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
 	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
 	"github.com/adrianpk/godddtodo/internal/app/service"
@@ -23,7 +23,7 @@ type (
 		// CQRS
 		CQRS *base.CQRSManager
 
-		JSONAPIServer *jsonapi.Server
+		JSONAPIServer *jsonapi2.Server
 		//WebServer     *web.Server
 		//GRPCServer    *grpc.Server
 	}
@@ -49,7 +49,7 @@ func (app *App) SetLogLevel(level string) {
 // Init app
 func (app *App) Init() error {
 	// Server
-	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{}, app.Log())
+	jas, err := jsonapi2.NewServer("json-api-server", &jsonapi2.Config{}, app.Log())
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (app *App) Init() error {
 	app.initCommands()
 
 	// Router
-	rm := jsonapi.NewRequestManager(app.CQRS, app.Log())
+	rm := jsonapi2.NewRequestManager(app.CQRS, app.Log())
 
 	h := openapi.Handler(rm)
 	jas.InitJSONAPIRouter(h)

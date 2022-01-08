@@ -4,8 +4,8 @@ package service
 import (
 	"errors"
 
-	"github.com/adrianpk/godddtodo/internal/app/adapter/driver/repo"
-	"github.com/adrianpk/godddtodo/internal/app/domain/service"
+	"github.com/adrianpk/godddtodo/internal/app/core"
+	"github.com/adrianpk/godddtodo/internal/app/repo"
 	"github.com/adrianpk/godddtodo/internal/base"
 )
 
@@ -16,7 +16,7 @@ type (
 		cqrs        *base.CQRSManager
 		repoRead    repo.ListRead
 		repoWrite   repo.ListWrite
-		listService *service.List
+		listService *core.List
 	}
 )
 
