@@ -42,26 +42,18 @@ func (c *CreateListCommand) HandleFunc() (f func(ctx context.Context, data inter
 	return c.handle
 }
 
-func (c *CreateListCommand) handle(ctx context.Context, data interface{}) error {
-	var err error
-
-	defer func() {
-		if err != nil {
-			c.Log().Errorf("command %s error: %w", c.Name(), err)
-		}
-	}()
-
+func (c *CreateListCommand) handle(ctx context.Context, data interface{}) (err error) {
 	switch d := data.(type) {
 	case CreateListCommandData:
 		c.Log().Debugf("Processing %s with %+v", c.Name(), d)
 
 		err = c.todoService.CreateList(ctx, d.Name, d.Description)
 		if err != nil {
-			return fmt.Errorf("%s error: %w", c.Name(), err)
+			return fmt.Errorf("%s handle error: %w", c.Name(), err)
 		}
 
 	default:
-		return errors.New("wrong command data")
+		return errors.New("create list wrong command data")
 	}
 
 	return nil

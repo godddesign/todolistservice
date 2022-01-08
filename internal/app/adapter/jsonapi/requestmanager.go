@@ -51,9 +51,9 @@ func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 
 		err = cmd.HandleFunc()(r.Context(), data)
 		if err != nil {
-			err := fmt.Errorf("create list error: %+v", err.Error())
+			err := fmt.Errorf("error: %s", err.Error())
 
-			rm.Log().Error(err.Error())
+			rm.Log().Errorf("Request Manager %s", err.Error())
 
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
