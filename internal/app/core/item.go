@@ -1,4 +1,4 @@
-package entity
+package core
 
 import (
 	"time"
@@ -8,10 +8,10 @@ import (
 
 type (
 	Item struct {
-		id          uuid.UUID
-		name        string
-		description string
-		meta        []Meta
+		ID          uuid.UUID
+		Name        string
+		Description string
+		Meta        []Meta
 	}
 )
 
