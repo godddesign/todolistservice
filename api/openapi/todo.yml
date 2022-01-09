@@ -7,23 +7,35 @@ info:
     name: Adrian PK
     url: https://adrianpk.com/
 servers:
-  - url: https://{hostname}/api
+  - url: https://{hostname}/api/v1
     variables:
       hostname:
         default: localhost
 security:
   - bearerAuth: []
+
 paths:
-  /lists:
+  /cmd/{command}:
     post:
-      operationId: createList
+      operationId: dispatch
+      parameters:
+        - in: path
+          name: command
+          schema:
+            type: string
+          required: true
+          description: Command to be executed
       requestBody:
-        description: Create a Todo list
+        description: Dispatch commands
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateList'
+              oneOf:
+                - $ref: '#/components/schemas/CreateList'
+#               - $ref: '#/components/schemas/UpdateLists'
+#               - $ref: '#/components/schemas/DeleteLists'
+#               - $ref: '#/components/schemas/GetAllLists'
       responses:
         '204':
           description: todo
@@ -33,6 +45,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+#  /cmd/create-list:
+#    post:
+#      operationId: createList
+#      requestBody:
+#        description: Create a Todo list
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: '#/components/schemas/CreateList'
+#      responses:
+#        '204':
+#          description: todo
+#        default:
+#          description: unexpected error
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Error'
 
 components:
   securitySchemes:

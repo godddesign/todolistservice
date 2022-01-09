@@ -8,7 +8,7 @@ import (
 
 func (server *Server) InitJSONAPIRouter(h http.Handler) {
 	r := base.NewRouter("json-api-router", server.Log())
-	r.Mount("/api", h)
+	r.Mount("/api/v1", h)
 
 	server.SetRouter(r)
 }
