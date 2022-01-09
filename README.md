@@ -18,7 +18,7 @@ Testing is also simplified since we are isolated from infrastructure issues (htt
 
 Finally it is possible to manually send queries and commands from console if required since it is trivial to create a CLI adapter that operates on the elements of the bounded context. This can be particularity useful during development stage.
 
-## Structure
+## Structure [TODO: Update chart to reflect new structure]
 ```mermaid
 flowchart TB
 
@@ -52,6 +52,30 @@ flowchart TB
 
 ```
 [WIP] This is a very basic rough draft, it's more of a placeholder for the actual chart (does GitHub render Mermaid?)
+
+## Run
+```shell
+$ make run
+go run cmd/todo.go
+[INF] 2022/01/09 17:31:57.937272 Server json-api-server initializing at port :8081
+[DBG] 2022/01/09 17:32:07.651828 Processing create-list with {Name:Home Description:What needs to be done in the house}
+[INF] 2022/01/09 17:32:07.651845 CreateList name: 'Home', description: 'What needs to be done in the house'
+[ERR] 2022/01/09 17:32:07.651866 error: create-list handle error: not implemented
+```
+
+## Call
+```shell
+curl --location --request POST 'http://localhost:8081/api/v1/cmd/create-list' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "userUUID": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "name": "Home",
+  "description": "What needs to be done in the house"
+}'
+```
+
+
+
 
 ## Notes
 
