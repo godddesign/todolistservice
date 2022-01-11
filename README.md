@@ -14,12 +14,10 @@ Request processing in a more RESTy way will be also considered if required (i.e 
 
 Testing is also simplified since we are isolated from infrastructure issues (http, grpc, etc).
 
-Finally it is possible to manually send queries and commands from console if required since it is trivial to create a CLI adapter that operates on the elements of the bounded context. This can be particularity useful during development stage.
+Finally, it is possible to manually send queries and commands from console if required since it is trivial to create a CLI adapter that operates on the elements of the bounded context. This can be particularity useful during development stage.
 
 ## Structure [TODO: Update chart to reflect new structure]
-![Draft](docs/images/first-draft.png?raw=true "Draft")
-
-[WIP] This is a very basic rough draft, it's more of a placeholder for the actual chart (does GitHub render Mermaid?)
+<img src="docs/images/first-draft.png?raw=true" alt="Draft" width="320">
 
 ## Run
 ```shell
@@ -44,7 +42,8 @@ curl --location --request POST 'http://localhost:8081/api/v1/cmd/create-list' \
 
 ### ADR
 
-[20220111 - New base structure](docs/adr/20220111-New-base-structure.md)
+* [20220111-01 - New base structure](docs/adr/20220111-01-New-base-structure.md)
+* [20220111-02 - Command bus](docs/adr/20220111-02-Command-bus.md)
 
 ## Notes
 
