@@ -1,0 +1,32 @@
+# Initial draft
+
+```mermaid
+flowchart TB
+    subgraph App
+      subgraph Request Manager
+        subgraph Command Manager
+          subgraph Command
+            appservices([App Services])
+            subgraph Domain
+              aggregates([aggregates])
+              entities([entities])
+              valueobjects([value objects])
+              domainservices([Domain Services])
+              aggregates --compose--> entities
+              aggregates --uses--> domainservices
+              entities --uses--> domainservices
+              entities --compose--> valueobjects
+            end
+            appservices --uses--> aggregates
+          end
+        end
+      end
+
+
+      subgraph GRPC Manager
+      end
+
+      subgraph WEB Manager
+      end
+    end
+```

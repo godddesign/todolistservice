@@ -45,7 +45,7 @@ var (
 func NewLogger(level string, isFlag bool) *BaseLogger {
 	flag := 0
 	if isFlag {
-		flag = log.Ldate | log.Ltime | log.Lmicroseconds //| log.Lshortfile
+		flag = log.Ldate | log.Ltime | log.Lmicroseconds //| adr.Lshortfile
 	}
 
 	return newLogger(level, flag)

@@ -10,8 +10,6 @@ Some choices may seem overly ceremonial within the Go ecosystem, particularly wh
 
 Request processing in a more RESTy way will be also considered if required (i.e .: during signin, signout, etc.).
 
-This is a proof of concept, needs some polishing and tests implementation.
-
 (*) A REST adapter can still make use of these commands and queries but now GET and POST requests will be enough the only meaningful information in the URL will be the name of the command to be executed or a suitable mapping. Also API documentation (OpenAPI) becomes more humanly understandable [TODO: show an example], this especially to people with less technical background.
 
 Testing is also simplified since we are isolated from infrastructure issues (http, grpc, etc).
@@ -19,38 +17,8 @@ Testing is also simplified since we are isolated from infrastructure issues (htt
 Finally it is possible to manually send queries and commands from console if required since it is trivial to create a CLI adapter that operates on the elements of the bounded context. This can be particularity useful during development stage.
 
 ## Structure [TODO: Update chart to reflect new structure]
-```mermaid
-flowchart TB
+![Draft](docs/images/first-draft.png?raw=true "Draft")
 
-    subgraph App
-      subgraph Request Manager
-        subgraph Command Manager
-          subgraph Command
-            appservices([App Services])
-            subgraph Domain
-              aggregates([aggregates])
-              entities([entities])
-              valueobjects([value objects])
-              domainservices([Domain Services])
-              aggregates --compose--> entities
-              aggregates --uses--> domainservices
-              entities --uses--> domainservices
-              entities --compose--> valueobjects
-            end
-            appservices --uses--> aggregates
-          end
-        end
-      end
-
-
-      subgraph GRPC Manager
-      end
-
-      subgraph WEB Manager
-      end
-    end
-
-```
 [WIP] This is a very basic rough draft, it's more of a placeholder for the actual chart (does GitHub render Mermaid?)
 
 ## Run
@@ -74,8 +42,9 @@ curl --location --request POST 'http://localhost:8081/api/v1/cmd/create-list' \
 }'
 ```
 
+### ADR
 
-
+[20220111 - New base structure](docs/adr/20220111-New-base-structure.md)
 
 ## Notes
 
