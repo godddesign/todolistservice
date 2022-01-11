@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/adrianpk/godddtodo/internal/app/cqrs/bus/nats"
 	"github.com/adrianpk/godddtodo/internal/app/repo/mongo"
 	"github.com/adrianpk/godddtodo/internal/base"
 
@@ -60,6 +61,12 @@ func main() {
 	}
 
 	a.TodoService = &ts
+
+	// Bus (TODO: Get config values from flags / environment)
+	a.NATS = nats.NewNATSClient("nats-client", nats.Config{
+		Host: "localhost",
+		Port: 4222,
+	}, log)
 
 	// Init & Start
 	err = a.InitAndStart()

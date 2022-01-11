@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
+	"github.com/adrianpk/godddtodo/internal/app/cqrs/bus/nats"
 	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
 	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
 	"github.com/adrianpk/godddtodo/internal/app/service"
@@ -19,6 +20,9 @@ type (
 
 		// Service
 		TodoService *service.Todo
+
+		// Bus
+		NATS *nats.NATSClient
 
 		// CQRS
 		CQRS *base.CQRSManager
@@ -47,11 +51,11 @@ func (app *App) SetLogLevel(level string) {
 }
 
 // Init app
-func (app *App) Init() error {
+func (app *App) Init() (err error) {
 	// Server
 	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{}, app.Log())
 	if err != nil {
-		return err
+		return fmt.Errorf("cannot start JSON API server: %w", err)
 	}
 
 	// Server
@@ -65,6 +69,12 @@ func (app *App) Init() error {
 	h := openapi.Handler(rm)
 
 	jas.InitJSONAPIRouter(h)
+
+	// Bus
+	err = app.NATS.Init()
+	if err != nil {
+		return fmt.Errorf("cannot start JSON API server: %w", err)
+	}
 
 	return nil
 }

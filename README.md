@@ -23,6 +23,7 @@ Finally, it is possible to manually send queries and commands from console if re
 ```shell
 $ make run
 go run cmd/todo.go
+[INF] 2022/01/09 17:31:57.937272 Starting NATS client (nats://localhost:4222)
 [INF] 2022/01/09 17:31:57.937272 Server json-api-server initializing at port :8081
 [DBG] 2022/01/09 17:32:07.651828 Processing create-list with {Name:Home Description:What needs to be done in the house}
 [INF] 2022/01/09 17:32:07.651845 CreateList name: 'Home', description: 'What needs to be done in the house'
@@ -51,15 +52,20 @@ curl --location --request POST 'http://localhost:8081/api/v1/cmd/create-list' \
 
 * Directory nesting to organize package definitions can be cumbersome but for now it simplifies mapping concepts from DDD to code.
 
-## Todo
-* Simplify the structure if it really make some sense.
-* Define the sequence of steps required to manually create a new command and associate it with driving adapters.
+## GTD
+### Inbox
+* Implement Command Bus
+
+### Next
+* Move to a multirepo / organization
+* Create three services
+  * Dispatcher (commands gateway)
+  * Split into three services
+    * Commands gateway
+    * Todo
+    * Dashboard
+  * Docker compose / k8s setup to orchestrate these three services, mongo and NATS server
+
+### Someday
 * Implement a gen code tool (command line) in order to simplify the creation of aggregates, entities, value objects, commands, adapters, etc.
-* Define which is the most convenient way to feed this tool:
-  * CLI shell arguments
-  * JSON
-  * YAML
-  * SAML
-  * TOML
-  * HCL
 
