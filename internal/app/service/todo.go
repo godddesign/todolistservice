@@ -8,15 +8,16 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/adrianpk/godddtodo/internal/app/core"
-	"github.com/adrianpk/godddtodo/internal/app/repo"
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/config"
+	"github.com/godddesign/todo/list/internal/app/core"
+	"github.com/godddesign/todo/list/internal/app/repo"
+	"github.com/godddesign/todo/list/internal/base"
 )
 
 type (
 	Todo struct {
 		*base.BaseWorker
-		config      Config
+		config      *config.Config
 		cqrs        *base.CQRSManager
 		repoRead    repo.ListRead
 		repoWrite   repo.ListWrite
@@ -24,13 +25,7 @@ type (
 	}
 )
 
-type (
-	Config struct {
-		TracingLevel string
-	}
-)
-
-func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg Config, log base.Logger) (Todo, error) {
+func NewTodo(name string, rr repo.ListRead, rw repo.ListWrite, cfg *config.Config, log base.Logger) (Todo, error) {
 	var svc Todo
 
 	if rr == nil {

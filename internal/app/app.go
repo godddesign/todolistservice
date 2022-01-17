@@ -1,33 +1,36 @@
 package app
 
 import (
+	"flag"
 	"fmt"
 	"sync"
 
-	"github.com/adrianpk/godddtodo/internal/app/adapter/jsonapi"
-	"github.com/adrianpk/godddtodo/internal/app/cqrs/bus/nats"
-	"github.com/adrianpk/godddtodo/internal/app/cqrs/command"
-	"github.com/adrianpk/godddtodo/internal/app/ports/openapi"
-	"github.com/adrianpk/godddtodo/internal/app/service"
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/adapter/rest"
+	"github.com/godddesign/todo/list/internal/app/config"
+	"github.com/godddesign/todo/list/internal/app/cqrs/bus/nats"
+	"github.com/godddesign/todo/list/internal/app/cqrs/command"
+	"github.com/godddesign/todo/list/internal/app/ports/openapi"
+	"github.com/godddesign/todo/list/internal/app/service"
+	"github.com/godddesign/todo/list/internal/base"
 )
 
 type (
 	// App description
 	App struct {
 		*base.App
-		Config *Config
+		Cfg *config.Config
 
 		// Service
 		TodoService *service.Todo
 
-		// Bus
-		NATS *nats.NATSClient
-
 		// CQRS
 		CQRS *base.CQRSManager
 
-		JSONAPIServer *jsonapi.Server
+		// Bus
+		// NATS
+		NATS *nats.Client
+
+		RESTServer *rest.Server
 		//WebServer     *web.Server
 		//GRPCServer    *grpc.Server
 	}
@@ -47,33 +50,19 @@ func NewApp(name, version string, log base.Logger) *App {
 }
 
 func (app *App) SetLogLevel(level string) {
-	app.Log().SetLevel(app.Config.Level)
+	app.Log().SetLevel(app.Cfg.Level)
 }
 
 // Init app
 func (app *App) Init() (err error) {
-	// Server
-	jas, err := jsonapi.NewServer("json-api-server", &jsonapi.Config{}, app.Log())
-	if err != nil {
-		return fmt.Errorf("cannot start JSON API server: %w", err)
-	}
-
-	// Server
-	app.JSONAPIServer = jas
-
 	// Commands
 	app.initCommands()
 
 	// Router
-	rm := jsonapi.NewRequestManager(app.CQRS, app.Log())
-	h := openapi.Handler(rm)
-
-	jas.InitJSONAPIRouter(h)
-
-	// Bus
-	err = app.NATS.Init()
-	if err != nil {
-		return fmt.Errorf("cannot start JSON API server: %w", err)
+	if app.RESTServer != nil {
+		rm := rest.NewRequestManager(app.CQRS, app.NATS, app.Log())
+		h := openapi.Handler(rm)
+		app.RESTServer.InitRESTRouter(h)
 	}
 
 	return nil
@@ -81,17 +70,33 @@ func (app *App) Init() (err error) {
 
 // Start app
 func (app *App) Start() error {
-	var err error
+	var errREST error
+	var errNATS error
 	var wg sync.WaitGroup
 
 	wg.Add(1)
 	go func() {
-		err = app.JSONAPIServer.Start(app.Config.Server.JSONAPIPort)
+		errREST = app.RESTServer.Start(app.Cfg.Server.JSONAPIPort)
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		errNATS = app.NATS.Start()
 		wg.Done()
 	}()
 
 	wg.Wait()
-	return err
+
+	if errREST != nil {
+		return fmt.Errorf("cannot start server: %w", errREST)
+	}
+
+	if errNATS != nil {
+		return fmt.Errorf("cannot start server: %w", errNATS)
+	}
+
+	return fmt.Errorf("cannot start server:\n\t%s\n\t%s\n", errREST.Error(), errNATS.Error())
 }
 
 func (app *App) InitAndStart() error {
@@ -129,4 +134,31 @@ func (app *App) AddCommand(command base.Command) {
 
 func (app *App) AddQuery(query base.Query) {
 	app.CQRS.AddQuery(query)
+}
+
+func (app *App) LoadConfig() config.Config {
+	if app.Cfg == nil {
+		app.Cfg = &config.Config{}
+	}
+
+	cfg := config.Config{}
+
+	// Server
+	flag.IntVar(&cfg.Server.JSONAPIPort, "json-api-port", 8081, "JSON API server port")
+
+	// Mongo
+	flag.StringVar(&cfg.Mongo.Host, "mongo-host", "localhost", "Mongo host")
+	flag.IntVar(&cfg.Mongo.Port, "mongo-port", 8081, "Mongo port")
+	flag.StringVar(&cfg.Mongo.User, "mongo-user", "", "Mongo user")
+	flag.StringVar(&cfg.Mongo.Pass, "mongo-pass", "", "Mongo pass")
+	flag.StringVar(&cfg.Mongo.Database, "mongo-database", "", "Mongo database")
+	flag.IntVar(&cfg.Mongo.MaxRetries, "mongo-max-reties", 10, "Mongo port")
+
+	// NATS
+	flag.StringVar(&cfg.NATS.Host, "nats-host", "0.0.0.0", "NATS host")
+	flag.IntVar(&cfg.NATS.Port, "nats-port", 4222, "NATS port")
+
+	app.Cfg = &cfg
+
+	return cfg
 }

@@ -41,12 +41,12 @@ const (
 	SessionKey = "session"
 )
 
-func NewServer(name string, log Logger) (*Server, error) {
+func NewServer(name string, log Logger) *Server {
 	server := Server{
 		BaseWorker: NewWorker(name, log),
 	}
 
-	return &server, nil
+	return &server
 }
 
 func (srv *Server) Name() string {

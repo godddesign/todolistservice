@@ -1,23 +1,22 @@
 package nats
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"runtime"
 
-	nats "github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go"
 
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/config"
+	"github.com/godddesign/todo/list/internal/base"
 )
 
 type (
-	NATSClient struct {
+	Client struct {
 		*base.BaseWorker
-		config Config
+		config *config.Config
 		conn   *nats.Conn
-	}
-
-	Config struct {
-		Host string
-		Port int
 	}
 )
 
@@ -26,37 +25,89 @@ const (
 	defaultPort = 4222
 )
 
-func NewNATSClient(name string, cfg Config, log base.Logger) *NATSClient {
-	return &NATSClient{
+const (
+	commandsSubj = "commands"
+)
+
+func NewClient(name string, cfg *config.Config, log base.Logger) *Client {
+	return &Client{
 		BaseWorker: base.NewWorker(name, log),
 		config:     cfg,
 	}
-
 }
 
-func (nc *NATSClient) Init() error {
-	nc.Log().Infof("Starting NATS client (%s)", nc.address())
+func (c *Client) Start() error {
+	c.Log().Infof("NATS client connecting to %s", c.address())
 
-	conn, err := nats.Connect(nats.DefaultURL)
+	var err error
+	c.conn, err = nats.Connect(c.address())
 	if err != nil {
 		return fmt.Errorf("nats connection cannot be established: %w", err)
 	}
 
-	nc.conn = conn
+	// Subscriptions
+	// WIP: Move this up, just only to verify subscriptions are working
+	c.SubscribeToCommands()
 
 	return nil
 }
 
-func (nc *NATSClient) address() (address string) {
+func (c *Client) address() (address string) {
 	host := defaultHost
-	if nc.config.Host == "" {
-		host = nc.config.Host
+	if c.config.NATS.Host == "" {
+		host = c.config.NATS.Host
 	}
 
 	port := defaultPort
-	if nc.config.Port == 0 {
+	if c.config.NATS.Port == 0 {
 		port = defaultPort
 	}
 
 	return fmt.Sprintf("nats://%s:%d", host, port)
+}
+
+func (c *Client) PublishCommand(name string, commandEvent []byte) {
+	c.Log().Infof("NATS publishing through: %s", c.conn.ConnectedAddr())
+
+	err := c.conn.Publish(commandsSubj, commandEvent)
+	if err != nil {
+		c.Log().Errorf("NATS command publishing error:", err.Error())
+	}
+}
+
+func (c *Client) SubscribeToCommands() {
+	c.Log().Infof("NATS subscribed through: %s", c.conn.ConnectedAddr())
+
+	var err error
+	_, err = c.conn.Subscribe(commandsSubj, func(m *nats.Msg) {
+		buf := bytes.NewBuffer(m.Data)
+		dec := gob.NewDecoder(buf)
+
+		ce := CommandEvent{}
+		err := dec.Decode(&ce)
+		if err != nil {
+			c.Log().Errorf("Cannot decode command event: %s", err.Error())
+		}
+
+		c.Log().Infof("Received a command event with ID: %s", ce.TracingID)
+	})
+
+	if err != nil {
+		c.Log().Errorf("NATS command subscription error: %s", err.Error())
+	}
+
+	err = c.conn.Flush()
+	if err != nil {
+		c.Log().Errorf("NATS flush error: %s", err.Error())
+	}
+
+	err = c.conn.LastError()
+	if err != nil {
+		c.Log().Error(err.Error())
+	}
+
+	c.Log().Infof("Listening on '%s' subject", commandsSubj)
+
+	runtime.Goexit()
+
 }

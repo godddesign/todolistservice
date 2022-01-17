@@ -36,11 +36,13 @@ func (bw BaseWorker) SetName(name string) {
 }
 
 func (bw BaseWorker) Init() error {
-	return bw.Init()
+	bw.Log().Info("Init")
+	return nil
 }
 
 func (bw BaseWorker) Start() error {
-	return bw.Start()
+	bw.Log().Info("Start")
+	return nil
 }
 
 func (bw BaseWorker) Log() Logger {

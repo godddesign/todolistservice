@@ -1,4 +1,4 @@
-module github.com/adrianpk/godddtodo
+module github.com/godddesign/todo/list
 
 go 1.16
 

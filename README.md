@@ -19,15 +19,28 @@ Finally, it is possible to manually send queries and commands from console if re
 ## Structure [TODO: Update chart to reflect new structure]
 <img src="docs/images/first-draft.png?raw=true" alt="Draft" width="320">
 
+# Prerequisites
+Install NATS server
+```shell
+$ GO111MODULE=on go get github.com/nats-io/nats-server/v2
+(...)
+$ nats-server -m 8222
+```
+
+Alternatively
+```shell
+$ docker pull nats:latest
+$ docker run -p 4222:4222 -ti nats:latest
+````
+
 ## Run
 ```shell
 $ make run
 go run cmd/todo.go
-[INF] 2022/01/09 17:31:57.937272 Starting NATS client (nats://localhost:4222)
-[INF] 2022/01/09 17:31:57.937272 Server json-api-server initializing at port :8081
-[DBG] 2022/01/09 17:32:07.651828 Processing create-list with {Name:Home Description:What needs to be done in the house}
-[INF] 2022/01/09 17:32:07.651845 CreateList name: 'Home', description: 'What needs to be done in the house'
-[ERR] 2022/01/09 17:32:07.651866 error: create-list handle error: not implemented
+[INF] 2022/01/17 23:55:58.549949 NATS client connecting to nats://localhost:4222
+[INF] 2022/01/17 23:55:58.550059 Server rest-server initializing at port :8081
+[INF] 2022/01/17 23:55:58.550754 NATS subscribed through: 127.0.0.1:4222
+[INF] 2022/01/17 23:55:58.550858 Listening on 'commands' subject
 ```
 
 ## Call
@@ -39,6 +52,19 @@ curl --location --request POST 'http://localhost:8081/api/v1/cmd/create-list' \
   "name": "Home",
   "description": "What needs to be done in the house"
 }'
+```
+
+```shell
+[INF] 2022/01/17 23:55:58.549949 NATS client connecting to nats://localhost:4222
+[INF] 2022/01/17 23:55:58.550059 Server rest-server initializing at port :8081
+[INF] 2022/01/17 23:55:58.550754 NATS subscribed through: 127.0.0.1:4222
+[INF] 2022/01/17 23:55:58.550858 Listening on 'commands' subject
+[INF] 2022/01/17 23:56:08.128877 NATS publishing through: 127.0.0.1:4222
+[INF] 2022/01/17 23:56:08.129185 Received a command event with ID: 4f587bb9-5218-4ad1-8735-c2ee5e0b4ecb
+[INF] 2022/01/17 23:56:10.709405 NATS publishing through: 127.0.0.1:4222
+[INF] 2022/01/17 23:56:10.709648 Received a command event with ID: 54ac4ec9-735d-428e-baba-1078184c44e9
+[INF] 2022/01/17 23:56:13.860968 NATS publishing through: 127.0.0.1:4222
+[INF] 2022/01/17 23:56:13.861305 Received a command event with ID: f7f47aea-acc3-4f66-98d2-96dd442638da
 ```
 
 ### ADR
