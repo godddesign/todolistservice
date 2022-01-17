@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 
-	"github.com/adrianpk/godddtodo/internal/app/core"
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/config"
+	"github.com/godddesign/todo/list/internal/app/core"
+	"github.com/godddesign/todo/list/internal/base"
 
 	"github.com/google/uuid"
 
-	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
+	db "github.com/godddesign/todo/list/internal/base/db/mongo"
 )
 
 type (
@@ -24,13 +25,13 @@ type (
 
 const listColl = "list"
 
-func NewListRead(name string, conn *db.Client, cfg Config, log base.Logger) *ListRead {
+func NewListRead(name string, conn *db.Client, cfg *config.Config, log base.Logger) *ListRead {
 	return &ListRead{
 		Repo: NewRepo(name, conn, listColl, cfg, log),
 	}
 }
 
-func NewListWrite(name string, conn *db.Client, cfg Config, log base.Logger) *ListWrite {
+func NewListWrite(name string, conn *db.Client, cfg *config.Config, log base.Logger) *ListWrite {
 	return &ListWrite{
 		Repo: NewRepo(name, conn, listColl, cfg, log),
 	}

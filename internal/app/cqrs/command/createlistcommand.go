@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/adrianpk/godddtodo/internal/app/service"
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/service"
+	"github.com/godddesign/todo/list/internal/base"
 )
 
 type (

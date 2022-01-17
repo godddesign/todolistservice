@@ -6,22 +6,21 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/adrianpk/godddtodo/internal/base"
-	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
+	"github.com/godddesign/todo/list/internal/app/config"
+	"github.com/godddesign/todo/list/internal/base"
+	db "github.com/godddesign/todo/list/internal/base/db/mongo"
 )
 
 type (
 	Repo struct {
 		*base.BaseWorker
-		config     Config
+		config     *config.Config
 		conn       *db.Client
 		collection string
 	}
-
-	Config struct{}
 )
 
-func NewRepo(name string, conn *db.Client, collection string, cfg Config, log base.Logger) *Repo {
+func NewRepo(name string, conn *db.Client, collection string, cfg *config.Config, log base.Logger) *Repo {
 	return &Repo{
 		BaseWorker: base.NewWorker(name, log),
 		config:     cfg,

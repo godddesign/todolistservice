@@ -6,16 +6,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/adrianpk/godddtodo/internal/app/cqrs/bus/nats"
-	"github.com/adrianpk/godddtodo/internal/app/repo/mongo"
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/app/adapter/rest"
+	"github.com/godddesign/todo/list/internal/app/cqrs/bus/nats"
+	"github.com/godddesign/todo/list/internal/app/repo/mongo"
+	"github.com/godddesign/todo/list/internal/base"
 
-	"github.com/adrianpk/godddtodo/internal/app"
-	"github.com/adrianpk/godddtodo/internal/app/service"
-	db "github.com/adrianpk/godddtodo/internal/base/db/mongo"
+	"github.com/godddesign/todo/list/internal/app"
+	"github.com/godddesign/todo/list/internal/app/service"
+	db "github.com/godddesign/todo/list/internal/base/db/mongo"
 )
-
-type contextKey string
 
 const (
 	name    = "todo"
@@ -49,24 +48,23 @@ func main() {
 	}, log)
 
 	// Repo
-	lrr := mongo.NewListRead("list-read-repo", mgo, mongo.Config{}, log)
+	lrr := mongo.NewListRead("list-read-repo", mgo, &cfg, log)
 
-	lwr := mongo.NewListWrite("list-write-repo", mgo, mongo.Config{}, log)
+	lwr := mongo.NewListWrite("list-write-repo", mgo, &cfg, log)
 
 	// Service
-	ts, err := service.NewTodo("todo-app-service", lrr, lwr, service.Config{}, log)
-
+	ts, err := service.NewTodo("todo-app-service", lrr, lwr, &cfg, log)
 	if err != nil {
 		exit(err)
 	}
 
 	a.TodoService = &ts
 
-	// Bus (TODO: Get config values from flags / environment)
-	a.NATS = nats.NewNATSClient("nats-client", nats.Config{
-		Host: "localhost",
-		Port: 4222,
-	}, log)
+	// Server
+	a.RESTServer = rest.NewServer("rest-server", &cfg, log)
+
+	// Bus
+	a.NATS = nats.NewClient("nats-client", &cfg, log)
 
 	// Init & Start
 	err = a.InitAndStart()

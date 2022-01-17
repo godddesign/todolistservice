@@ -6,7 +6,7 @@ package mongo
 import (
 	"fmt"
 
-	"github.com/adrianpk/godddtodo/internal/base"
+	"github.com/godddesign/todo/list/internal/base"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )

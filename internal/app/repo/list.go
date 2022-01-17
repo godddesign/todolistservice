@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/adrianpk/godddtodo/internal/app/core"
+	"github.com/godddesign/todo/list/internal/app/core"
 )
 
 type (
