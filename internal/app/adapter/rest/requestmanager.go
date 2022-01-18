@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -19,15 +17,15 @@ type (
 	RequestManager struct {
 		*base.BaseWorker
 		cqrs *base.CQRSManager
-		nats *nats.Client
+		bus  *nats.BusManager
 	}
 )
 
-func NewRequestManager(cqrs *base.CQRSManager, natsClient *nats.Client, log base.Logger) (rm *RequestManager) {
+func NewRequestManager(cqrs *base.CQRSManager, bus *nats.BusManager, log base.Logger) (rm *RequestManager) {
 	return &RequestManager{
 		BaseWorker: base.NewWorker("request-manager", log),
 		cqrs:       cqrs,
-		nats:       natsClient,
+		bus:        bus,
 	}
 
 }
@@ -40,8 +38,9 @@ func NewRequestManager(cqrs *base.CQRSManager, natsClient *nats.Client, log base
 func (rm *RequestManager) Dispatch(w http.ResponseWriter, r *http.Request, commandName string) {
 	reqID := genReqID(r)
 
-	// TODO: Sending raw body for now
-	// See for a better approach later.
+	// WIP: Sending gob data for now
+	// TODO: Command should validate payload
+	// before enqueuing.
 	payload, err := body(r)
 	if err != nil {
 		err := fmt.Errorf("send command error: %w", err)
@@ -50,7 +49,7 @@ func (rm *RequestManager) Dispatch(w http.ResponseWriter, r *http.Request, comma
 
 	switch commandName {
 	case "create-list":
-		rm.SendCommand("create-list-command", payload, reqID)
+		rm.bus.SendCommand("create-list-command", payload, reqID)
 
 	//case "update-list":
 	//	rm.UpdateList(w, r)
@@ -67,67 +66,7 @@ func (rm *RequestManager) Dispatch(w http.ResponseWriter, r *http.Request, comma
 	}
 }
 
-func (rm *RequestManager) SendCommand(cmd string, payload []byte, tracingID string) {
-	ce, err := encodeCommand(cmd, payload, tracingID)
-	if err != nil {
-		rm.Log().Errorf("Send command error: %s", err.Error())
-		return
-	}
-
-	rm.nats.PublishCommand(cmd, ce)
-}
-
-//func (rm *RequestManager) Receive(commandName string, payload []byte) {
-//	switch commandName {
-//	case "create-list":
-//		rm.CreateList(payload)
-//
-//	//case "update-list":
-//	//	rm.UpdateList(w, r)
-//
-//	//case "delete-list":
-//	//	rm.DeleteList(w, r)
-//
-//	//case "get-all-lists":
-//	//	rm.GetAllLists(w, r)
-//
-//	default:
-//		err := fmt.Errorf("command '%s' not found", commandName)
-//		rm.Log().Error(err.Error())
-//		// NOTE: Send an error event?
-//	}
-//}
-
-//func (rm *RequestManager) CreateList(payload []byte) {
-//	cmd, ok := rm.cqrs.FindCommand(name)
-//	if !ok {
-//		err := fmt.Errorf("command '%s' not found", name)
-//		rm.Log().Errorf("Create list command error: %w", err)
-//	}
-//
-//	switch cmd := cmd.(type) {
-//	case *command.CreateListCommand:
-//		data, err := ToCreateListCommandData(r)
-//		if err != nil {
-//			err := fmt.Errorf("wrong '%s' data: %+v", cmd.Name(), data)
-//			rm.Error(err, w)
-//			return
-//		}
-//
-//		ctx := context.Background()
-//		err = cmd.HandleFunc()(ctx, data)
-//		if err != nil {
-//			err := fmt.Errorf("error: %s", err.Error())
-//			rm.Error(err, w)
-//			return
-//		}
-//
-//	default:
-//		rm.Log().Errorf("wrong command: %+v", cmd)
-//	}
-//}
-
-func (rm *RequestManager) CreateListReqRes(w http.ResponseWriter, r *http.Request) {
+func (rm *RequestManager) CreateList(w http.ResponseWriter, r *http.Request) {
 	name := "create-list"
 
 	cmd, ok := rm.cqrs.FindCommand(name)
@@ -190,25 +129,4 @@ func genReqID(r *http.Request) (id string) {
 	}
 
 	return id
-}
-
-func encodeCommand(cmd string, payload []byte, tracingID string) (cmdEvent []byte, err error) {
-	ce := nats.CommandEvent{
-		Command:   cmd,
-		Payload:   payload,
-		TracingID: tracingID,
-	}
-
-	buf := bytes.Buffer{}
-	err = gob.NewEncoder(&buf).Encode(ce)
-	if err != nil {
-		return cmdEvent, err
-	}
-
-	cmdEvent, err = ioutil.ReadAll(&buf)
-	if err != nil {
-		return cmdEvent, err
-	}
-
-	return cmdEvent, err
 }

@@ -64,7 +64,9 @@ func main() {
 	a.RESTServer = rest.NewServer("rest-server", &cfg, log)
 
 	// Bus
-	a.NATS = nats.NewClient("nats-client", &cfg, log)
+	nc := nats.NewClient("nats-client", &cfg, log)
+
+	a.Bus = nats.NewBusManager("nats-bus", &cfg, nc, log)
 
 	// Init & Start
 	err = a.InitAndStart()
