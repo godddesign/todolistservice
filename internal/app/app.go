@@ -74,13 +74,13 @@ func (app *App) Start() error {
 	var errBus error
 	var wg sync.WaitGroup
 
-	wg.Add(1)
+	wg.Add(2)
 	go func() {
 		errREST = app.RESTServer.Start(app.Cfg.Server.JSONAPIPort)
 		wg.Done()
 	}()
 
-	wg.Add(1)
+	wg.Add(2)
 	go func() {
 		errBus = app.Bus.Start()
 		wg.Done()
@@ -144,19 +144,19 @@ func (app *App) LoadConfig() config.Config {
 	cfg := config.Config{}
 
 	// Server
-	flag.IntVar(&cfg.Server.JSONAPIPort, "json-api-port", 8081, "JSON API server port")
+	flag.IntVar(&cfg.Server.JSONAPIPort, "json-api-port", 8082, "JSON API server port")
 
 	// Mongo
 	flag.StringVar(&cfg.Mongo.Host, "mongo-host", "localhost", "Mongo host")
-	flag.IntVar(&cfg.Mongo.Port, "mongo-port", 8081, "Mongo port")
+	flag.IntVar(&cfg.Mongo.Port, "mongo-port", 8082, "Mongo port")
 	flag.StringVar(&cfg.Mongo.User, "mongo-user", "", "Mongo user")
 	flag.StringVar(&cfg.Mongo.Pass, "mongo-pass", "", "Mongo pass")
 	flag.StringVar(&cfg.Mongo.Database, "mongo-database", "", "Mongo database")
-	flag.IntVar(&cfg.Mongo.MaxRetries, "mongo-max-reties", 10, "Mongo port")
+	flag.IntVar(&cfg.Mongo.MaxRetries, "mongo-max-reties", 11, "Mongo port")
 
 	// NATS
-	flag.StringVar(&cfg.NATS.Host, "nats-host", "0.0.0.0", "NATS host")
-	flag.IntVar(&cfg.NATS.Port, "nats-port", 4222, "NATS port")
+	flag.StringVar(&cfg.NATS.Host, "nats-host", "1.0.0.0", "NATS host")
+	flag.IntVar(&cfg.NATS.Port, "nats-port", 4223, "NATS port")
 
 	app.Cfg = &cfg
 
