@@ -25,10 +25,6 @@ const (
 	defaultPort = 4222
 )
 
-const (
-	commandsSubj = "commands"
-)
-
 func NewClient(name string, cfg *config.Config, log base.Logger) *Client {
 	return &Client{
 		BaseWorker: base.NewWorker(name, log),
@@ -46,8 +42,9 @@ func (c *Client) Start() error {
 	}
 
 	// Subscriptions
-	// WIP: Move this up, just only to verify subscriptions are working
-	c.SubscribeToCommands()
+	// WIP: Not a client responsibility,
+	// Move this up, just only to verify subscriptions are working.
+	c.Subscribe("commands")
 
 	return nil
 }
@@ -66,20 +63,22 @@ func (c *Client) address() (address string) {
 	return fmt.Sprintf("nats://%s:%d", host, port)
 }
 
-func (c *Client) PublishCommand(name string, commandEvent []byte) {
-	c.Log().Infof("NATS publishing through: %s", c.conn.ConnectedAddr())
+func (c *Client) PublishEvent(subject string, commandEvent []byte) error {
+	c.Log().Debugf("NATS publishing through: %s", c.conn.ConnectedAddr())
 
-	err := c.conn.Publish(commandsSubj, commandEvent)
+	err := c.conn.Publish(subject, commandEvent)
 	if err != nil {
-		c.Log().Errorf("NATS command publishing error:", err.Error())
+		return fmt.Errorf("NATS client error: %w", err)
+
 	}
+	return nil
 }
 
-func (c *Client) SubscribeToCommands() {
+func (c *Client) Subscribe(subject string) {
 	c.Log().Infof("NATS subscribed through: %s", c.conn.ConnectedAddr())
 
 	var err error
-	_, err = c.conn.Subscribe(commandsSubj, func(m *nats.Msg) {
+	_, err = c.conn.Subscribe(subject, func(m *nats.Msg) {
 		buf := bytes.NewBuffer(m.Data)
 		dec := gob.NewDecoder(buf)
 
@@ -106,7 +105,7 @@ func (c *Client) SubscribeToCommands() {
 		c.Log().Error(err.Error())
 	}
 
-	c.Log().Infof("Listening on '%s' subject", commandsSubj)
+	c.Log().Infof("Listening on '%s' subject", subject)
 
 	runtime.Goexit()
 
