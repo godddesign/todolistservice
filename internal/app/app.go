@@ -28,7 +28,7 @@ type (
 
 		// Bus
 		// NATS
-		NATS *nats.Client
+		Bus *nats.BusManager
 
 		RESTServer *rest.Server
 		//WebServer     *web.Server
@@ -60,7 +60,7 @@ func (app *App) Init() (err error) {
 
 	// Router
 	if app.RESTServer != nil {
-		rm := rest.NewRequestManager(app.CQRS, app.NATS, app.Log())
+		rm := rest.NewRequestManager(app.CQRS, app.Bus, app.Log())
 		h := openapi.Handler(rm)
 		app.RESTServer.InitRESTRouter(h)
 	}
@@ -71,7 +71,7 @@ func (app *App) Init() (err error) {
 // Start app
 func (app *App) Start() error {
 	var errREST error
-	var errNATS error
+	var errBus error
 	var wg sync.WaitGroup
 
 	wg.Add(1)
@@ -82,7 +82,7 @@ func (app *App) Start() error {
 
 	wg.Add(1)
 	go func() {
-		errNATS = app.NATS.Start()
+		errBus = app.Bus.Start()
 		wg.Done()
 	}()
 
@@ -92,11 +92,11 @@ func (app *App) Start() error {
 		return fmt.Errorf("cannot start server: %w", errREST)
 	}
 
-	if errNATS != nil {
-		return fmt.Errorf("cannot start server: %w", errNATS)
+	if errBus != nil {
+		return fmt.Errorf("cannot start server: %w", errBus)
 	}
 
-	return fmt.Errorf("cannot start server:\n\t%s\n\t%s\n", errREST.Error(), errNATS.Error())
+	return fmt.Errorf("cannot start server:\n\t%s\n\t%s\n", errREST.Error(), errBus.Error())
 }
 
 func (app *App) InitAndStart() error {
